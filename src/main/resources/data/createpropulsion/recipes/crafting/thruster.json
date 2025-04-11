@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "SPS",
+        "SMS",
+        " C "
+    ],
+    "key": {
+        "S": {
+            "item": "create:iron_sheet"
+        },
+        "P": {
+            "item": "create:fluid_pipe"
+        },
+        "M": {
+            "item": "create:precision_mechanism"
+        },
+        "C": {
+            "item": "create:chute"
+        }
+    },
+    "result": {
+        "item": "createpropulsion:thruster"
+    }
+}

@@ -1,0 +1,17 @@
+[
+    {
+        "block": "createpropulsion:thruster",
+        "mass": 3000.0,
+        "friction": 0.6
+    },
+    {
+        "block": "createpropulsion:inline_optical_sensor",
+        "mass": 100.0,
+        "friction": 0.6
+    },
+    {
+        "block": "createpropulsion:optical_sensor",
+        "mass": 1200.0,
+        "friction": 0.6
+    }
+]

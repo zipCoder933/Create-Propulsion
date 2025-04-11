@@ -1,0 +1,27 @@
+{
+    "block.createpropulsion.thruster": "Реактивный двигатель",
+    "item.createpropulsion.thruster": "Реактивный двигатель",
+
+    "block.createpropulsion.inline_optical_sensor": "Компактный оптический датчик",
+    "item.createpropulsion.inline_optical_sensor": "Компактный оптический датчик",
+
+    "block.createpropulsion.optical_sensor": "Оптический датчик",
+    "item.createpropulsion.optical_sensor": "Оптический датчик",
+    "create.gui.optical_sensor.distance_behaviour": "Дальность действия датчика",
+
+    "create.gui.goggles.thruster": "Реактивный двигатель",
+    "create.gui.goggles.thruster.obstructed": "Заблокировано",
+    "create.gui.goggles.thruster.efficiency": "Эффективность",
+
+    "createpropulsion.inline_optical_sensor.tooltip.summary": "Сканирует _лучом_ до 16 блоков.",
+    "createpropulsion.inline_optical_sensor.tooltip.condition1": "Когда блок обнаружен",
+    "createpropulsion.inline_optical_sensor.tooltip.behaviour1": "Излучает редстоун-сигнал. Сигнал сильнее для блоков находящихся ближе.",
+
+    "createpropulsion.optical_sensor.tooltip.summary": "Настраиваемый оптический датчик. Есть возможность изменить дистанцию и установить фильтр по типу блока.",
+    "createpropulsion.optical_sensor.tooltip.condition1": "Когда блок обнаружен",
+    "createpropulsion.optical_sensor.tooltip.behaviour1": "Если обнаружен подходящий блок — излучает редстоун-сигнал. Сигнал сильнее для блоков находящихся ближе.",
+
+    "createpropulsion.thruster.tooltip.summary": "Создаёт тягу до 200 кН при установке на корабль.",
+    "createpropulsion.thruster.tooltip.condition1": "Когда заправлен и подан редстоун-сигнал",
+    "createpropulsion.thruster.tooltip.behaviour1": "Толкает корабль. Тяга зависит от мощности редстоун-сигнала и используемого топлива."
+}

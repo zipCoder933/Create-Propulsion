@@ -1,0 +1,57 @@
+modLoader="javafml" #mandatory
+loaderVersion="${loader_version_range}"
+license="MIT License"
+[[mods]]
+modId="createpropulsion"
+version="0.1.0"
+displayName="Create: Propulsion"
+# A file name (in the root of the mod JAR) containing a logo for display
+#logoFile="createpropulsion.png" #optional
+authors="Sergey Feduk"
+modClass="com.deltasf.createpropulsion.CreatePropulsion"
+
+description='''Example Mod Description'''
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+    modId="create"
+    mandatory=true
+    versionRange="[0.5.1.a,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.${mod_id}]]
+	modId = "valkyrienskies"
+	mandatory = true
+	versionRange = "(,2.4.0)"
+	ordering = "AFTER"
+	side = "BOTH"
+
+#Optional
+[[dependencies.${mod_id}]]
+	modId = "createdieselgenerators"
+	mandatory = false
+	versionRange = "[1.2,)"
+	ordering = "AFTER"
+	side = "BOTH"
+[[dependencies.${mod_id}]]
+	modId = "shimmer"
+	mandatory = false
+	versionRange = "[0.2.2,)"
+	ordering = "AFTER"
+	side = "BOTH"
+[[dependencies.${mod_id}]]
+	modId = "createbigcannons"
+	mandatory = false
+	versionRange = "[5.6.0,)"
+	ordering = "NONE"
+	side = "BOTH"

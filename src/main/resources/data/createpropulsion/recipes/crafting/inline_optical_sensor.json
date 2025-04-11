@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "   ",
+        "SDS",
+        " T "
+    ],
+    "key": {
+        "S": {
+            "item": "create:brass_sheet"
+        },
+        "D": {
+            "item": "minecraft:redstone"
+        },
+        "T": {
+            "item": "create:electron_tube"
+        }
+    },
+    "result": {
+        "item": "createpropulsion:inline_optical_sensor"
+    }
+}

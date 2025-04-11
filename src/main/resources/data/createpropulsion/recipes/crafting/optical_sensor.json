@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " P ",
+        " D ",
+        " S "
+    ],
+    "key": {
+        "S": {
+            "item": "createpropulsion:inline_optical_sensor"
+        },
+        "P": {
+            "item": "create:precision_mechanism"
+        },
+        "D": {
+            "item": "create:brass_casing"
+        }
+    },
+    "result": {
+        "item": "createpropulsion:optical_sensor"
+    }
+}

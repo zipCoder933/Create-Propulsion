@@ -1,0 +1,29 @@
+{
+    "itemGroup.createpropulsion.base": "Create: Propulsion",
+
+    "block.createpropulsion.thruster": "Thruster",
+    "item.createpropulsion.thruster": "Thruster",
+
+    "block.createpropulsion.inline_optical_sensor": "Inline optical sensor",
+    "item.createpropulsion.inline_optical_sensor": "Inline optical sensor",
+
+    "block.createpropulsion.optical_sensor": "Optical sensor",
+    "item.createpropulsion.optical_sensor": "Optical sensor",
+    "create.gui.optical_sensor.distance_behaviour": "Raycast distance",
+
+    "create.gui.goggles.thruster": "Thruster",
+    "create.gui.goggles.thruster.obstructed": "Obstructed",
+    "create.gui.goggles.thruster.efficiency": "Efficiency",
+
+    "createpropulsion.inline_optical_sensor.tooltip.summary": "Casts a _ray_ up to _16 blocks long_, detecting blocks.",
+    "createpropulsion.inline_optical_sensor.tooltip.condition1": "When block is detected",
+    "createpropulsion.inline_optical_sensor.tooltip.behaviour1": "Emits _redstone signal_. Power is stronger for closer blocks.",
+
+    "createpropulsion.optical_sensor.tooltip.summary": "Configurable _raycast sensor_. Set _distance_ and _filter_ by block type.",
+    "createpropulsion.optical_sensor.tooltip.condition1": "When block is detected",
+    "createpropulsion.optical_sensor.tooltip.behaviour1": "If a matching block is detected, emits _redstone signal_. Power is stronger for closer blocks.",
+
+    "createpropulsion.thruster.tooltip.summary": "Provides thrust up to _200 KN_ to push vehicles.",
+    "createpropulsion.thruster.tooltip.condition1": "When fueled and powered",
+    "createpropulsion.thruster.tooltip.behaviour1": "Pushes vehicles. Thrust depends on _redstone signal_ strength"
+}

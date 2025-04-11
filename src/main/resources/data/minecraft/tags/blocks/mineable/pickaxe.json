@@ -1,0 +1,8 @@
+{
+    "replace": false,
+    "values": [
+        "createpropulsion:thruster",
+        "createpropulsion:inline_optical_sensor",
+        "createpropulsion:optical_sensor"
+    ]
+}
