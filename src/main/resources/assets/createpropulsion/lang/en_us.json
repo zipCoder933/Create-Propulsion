@@ -4,14 +4,18 @@
     "block.createpropulsion.thruster": "Thruster",
     "item.createpropulsion.thruster": "Thruster",
 
-    "block.createpropulsion.inline_optical_sensor": "Inline optical sensor",
-    "item.createpropulsion.inline_optical_sensor": "Inline optical sensor",
+    "block.createpropulsion.inline_optical_sensor": "Inline Optical Sensor",
+    "item.createpropulsion.inline_optical_sensor": "Inline Pptical Sensor",
 
-    "block.createpropulsion.optical_sensor": "Optical sensor",
-    "item.createpropulsion.optical_sensor": "Optical sensor",
-    "create.gui.optical_sensor.distance_behaviour": "Raycast distance",
+    "block.createpropulsion.optical_sensor": "Optical Sensor",
+    "item.createpropulsion.optical_sensor": "Optical Sensor",
+    "create.gui.optical_sensor.distance_behaviour": "Raycast Distance",
 
-    "create.gui.goggles.thruster": "Thruster",
+    "create.gui.goggles.thruster.status": "Thruster Status",
+    "create.gui.goggles.thruster.status.no_fuel": "No Fuel",
+    "create.gui.goggles.thruster.status.wrong_fuel": "Wrong Fuel",
+    "create.gui.goggles.thruster.status.not_powered": "Not Powered",
+    "create.gui.goggles.thruster.status.working": "On",
     "create.gui.goggles.thruster.obstructed": "Obstructed",
     "create.gui.goggles.thruster.efficiency": "Efficiency",
 
@@ -25,5 +29,5 @@
 
     "createpropulsion.thruster.tooltip.summary": "Provides thrust up to _200 KN_ to push vehicles.",
     "createpropulsion.thruster.tooltip.condition1": "When fueled and powered",
-    "createpropulsion.thruster.tooltip.behaviour1": "Pushes vehicles. Thrust depends on _redstone signal_ strength"
+    "createpropulsion.thruster.tooltip.behaviour1": "Pushes vehicles. Thrust depends on _redstone signal_ strength."
 }

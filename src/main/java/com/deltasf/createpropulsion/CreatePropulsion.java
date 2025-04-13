@@ -171,7 +171,6 @@ public class CreatePropulsion {
     @EventBusSubscriber(modid = ID, value = Dist.CLIENT)
     public class TooltipHandler {
         @SubscribeEvent
-        //@OnlyIn(Dist.CLIENT)
         public static void addToItemTooltip(ItemTooltipEvent event) {
             //Looked this up in CDG
             Item item = event.getItemStack().getItem();

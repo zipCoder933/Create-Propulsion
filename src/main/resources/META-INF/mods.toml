@@ -10,7 +10,7 @@ displayName="Create: Propulsion"
 authors="Sergey Feduk"
 modClass="com.deltasf.createpropulsion.CreatePropulsion"
 
-description='''Example Mod Description'''
+description='''A mod that adds optical sensors and thruster to the Create mod. All stuff works on Valkyrien Skies 2 ships!'''
 [[dependencies.${mod_id}]]
     modId="forge"
     mandatory=true

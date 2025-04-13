@@ -22,6 +22,7 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.LangBuilder;
 
 import static com.deltasf.createpropulsion.thruster.ThrusterBlock.FACING;
 import static com.deltasf.createpropulsion.thruster.ThrusterBlock.POWER;
@@ -171,64 +172,6 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         emitParticles(level, pos, state, blockEntity);
     }
 
-    /*private void emitParticles(Level level, BlockPos pos, BlockState state, ThrusterBlockEntity blockEntity){
-        if (blockEntity.emptyBlocks == 0) return; //Obstructed
-        int power = state.getValue(POWER);
-        if (power == 0) return;
-        if (!validFluid()) return; 
-
-        float powerPercentage = Math.max(power, 3) / 15.0f;
-        float velocity = 2000.0f * powerPercentage;
-        //float shipVelocityModifier = 0.14f;
-
-        Direction direction = state.getValue(FACING);
-        Direction oppositeDirection = direction.getOpposite();
-        
-
-
-        double particleX = pos.getX() + 0.5 + oppositeDirection.getStepX() * 0.85;
-        double particleY = pos.getY() + 0.5 + oppositeDirection.getStepY() * 0.85;
-        double particleZ = pos.getZ() + 0.5 + oppositeDirection.getStepZ() * 0.85;
-
-        Vector3d baseParticleVelocity = new Vector3d(0,0,0);
-        //Vector3d rotatedShipVelocity = new Vector3d();
-        
-        ClientShip ship = VSGameUtilsKt.getShipObjectManagingPos((ClientLevel)level, pos);
-        if (ship != null) {
-            //ShipTransform transform = ship.getTransform();
-            //ServerShip shp2;
-            
-            Vector3d escapeDirShipSpace = new Vector3d(
-                oppositeDirection.getStepX(),
-                oppositeDirection.getStepY(),
-                oppositeDirection.getStepZ()
-            );
-            Vector3d escapeDirWorldSpace = new Vector3d();
-            //transform.transformDirectionNoScalingFromShipToWorld(escapeDirShipSpace, escapeDirWorldSpace);
-            Quaterniondc shipRotation = ship.getRenderTransform().getShipToWorldRotation();
-            Quaterniond reversedShipRotation = new Quaterniond(shipRotation)/*.invert();
-            reversedShipRotation.transform(escapeDirShipSpace, escapeDirWorldSpace);
-            escapeDirWorldSpace.negate();
-
-            //
-            escapeDirWorldSpace.normalize(); 
-            Vector3d particleEscapeVelocity = new Vector3d(escapeDirWorldSpace);
-            particleEscapeVelocity.mul(velocity); 
-            //System.out.println("Escape vel: " + particleEscapeVelocity.toString());
-            Vector3d finalParticleVelocity = new Vector3d(ship.getVelocity());
-            //System.out.println("Ship vel: " + finalParticleVelocity.toString());
-            finalParticleVelocity.add(particleEscapeVelocity);
-            baseParticleVelocity.add(finalParticleVelocity);
-
-            // Vec3 vel = new Vec3(ship.getVelocity().x(),ship.getVelocity().y(),ship.getVelocity().z());
-            // Vec3 pos2 = VSGameUtilsKt.toWorldCoordinates(level, new Vec3(pos.getX(), pos.getY(), pos.getZ()));
-            // DebugDrawer.drawLine("ship_velocity", pos2, new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(vel));
-        }
-
-        level.addParticle(new PlumeParticleData(particleType), true, particleX, particleY, particleZ, 
-            baseParticleVelocity.x, baseParticleVelocity.y, baseParticleVelocity.z);
-    }*/
-
     private void emitParticles(Level level, BlockPos pos, BlockState state, ThrusterBlockEntity blockEntity){
         if (blockEntity.emptyBlocks == 0) return; //Obstructed
         int power = state.getValue(POWER);
@@ -270,8 +213,26 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking){
-        //Engine tooltip
-        Lang.translate("gui.goggles.thruster", new Object[0]).forGoggles(tooltip);
+        //Calculate obstruction if we just placed the thruster block 
+        //isThrustDirty used as a obstruction calculation flag so we do not run it multiple times during the same tick
+        if (currentTick == 0 && !isThrustDirty) {
+            calculateObstruction(getLevel(), worldPosition, getBlockState().getValue(FACING));
+        }
+        //Thruster status
+        LangBuilder status;
+        if (fluidStack().isEmpty()) {
+            status = Lang.translate("gui.goggles.thruster.status.no_fuel", new Object[0]).style(ChatFormatting.RED);
+        } else if (!validFluid()) {
+            status = Lang.translate("gui.goggles.thruster.status.wrong_fuel", new Object[0]).style(ChatFormatting.RED);
+        } else if (getBlockState().getValue(POWER) == 0) {
+            status = Lang.translate("gui.goggles.thruster.status.not_powered", new Object[0]).style(ChatFormatting.GOLD);
+        } else if (emptyBlocks == 0) {
+            status = Lang.translate("gui.goggles.thruster.obstructed", new Object[0]).style(ChatFormatting.RED);
+        } else {
+            status = Lang.translate("gui.goggles.thruster.status.working", new Object[0]).style(ChatFormatting.GREEN);
+        }
+        Lang.translate("gui.goggles.thruster.status", new Object[0]).text(":").space().add(status).forGoggles(tooltip);
+
         float efficiency = 100;
         ChatFormatting tooltipColor = ChatFormatting.GREEN;
         //Obstruction, if present
