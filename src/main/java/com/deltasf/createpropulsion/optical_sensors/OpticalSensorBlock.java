@@ -111,7 +111,7 @@ public class OpticalSensorBlock extends DirectionalBlock implements EntityBlock,
 
     @Override
     public int getDirectSignal(@Nonnull BlockState blockState, @Nonnull BlockGetter blockAccess, @Nonnull BlockPos pos, @Nonnull Direction side) {
-        return blockState.getValue(FACING).getOpposite() == side ? 0 : blockState.getValue(POWER);
+        return blockState.getValue(FACING) == side ? blockState.getValue(POWER) : 0;
     }
 
     @Override

@@ -10,7 +10,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringB
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -51,17 +50,11 @@ public class OpticalSensorBlockEntity extends InlineOpticalSensorBlockEntity {
             newPower = 0;
         }
 
-        int oldPower = state.getValue(InlineOpticalSensorBlock.POWER);
+        int oldPower = state.getValue(OpticalSensorBlock.POWER);
         if (oldPower != newPower) {
             //Update block
-            BlockState updatedState = state.setValue(InlineOpticalSensorBlock.POWER, newPower).setValue(InlineOpticalSensorBlock.POWERED, newPower > 0);
+            BlockState updatedState = state.setValue(OpticalSensorBlock.POWER, newPower).setValue(OpticalSensorBlock.POWERED, newPower > 0);
             level.setBlock(pos, updatedState, Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS);
-            
-            Direction facingDir = state.getValue(InlineOpticalSensorBlock.FACING);
-            BlockPos adjacentPos = pos.relative(facingDir);
-            level.updateNeighborsAt(adjacentPos, state.getBlock());
-            //Block behind the optical sensor also needs to be updated so stuff touching it also updates redstone signal
-            level.updateNeighborsAt(pos.relative(state.getValue(InlineOpticalSensorBlock.FACING).getOpposite()), state.getBlock());
         }
     }
 

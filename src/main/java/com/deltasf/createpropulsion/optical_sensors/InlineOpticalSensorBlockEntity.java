@@ -83,7 +83,8 @@ public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
         float maxRaycastDistance = getMaxRaycastDistanceNormalized();
         Pair<Vec3, Vec3> raycastPositions = calculateRaycastPositions(shipLocalPos, state.getValue(InlineOpticalSensorBlock.FACING), maxRaycastDistance); 
 
-        // Perform raycast using world coordinates
+        //Perform raycast using world coordinates
+        //Probably a good idea to allow to clip fluids too, probably via config, probably
         @SuppressWarnings("null") //Because VSCode
         ClipContext context = new ClipContext(raycastPositions.getFirst(), raycastPositions.getSecond(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
         BlockHitResult hit = level.clip(context);
@@ -121,6 +122,7 @@ public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
         Vec3 worldDisplacement;
         //Ship check
         LoadedShip ship = null;
+        //Technically we can cache onShip and ship and recalculate them only when block position changes
         boolean onShip = VSGameUtilsKt.isBlockInShipyard(level, shipLocalPos);
         if (onShip) {
             ship = VSGameUtilsKt.getShipObjectManagingPos(level, shipLocalPos);
