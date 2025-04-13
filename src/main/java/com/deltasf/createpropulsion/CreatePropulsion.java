@@ -13,22 +13,17 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.Lang;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTab.DisplayItemsGenerator;
 import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -47,7 +42,6 @@ import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import javax.annotation.Nonnull;
 import com.simibubi.create.foundation.item.TooltipHelper.Palette;
@@ -148,16 +142,6 @@ public class CreatePropulsion {
 
         private static class RegistrateDisplayItemsGenerator implements DisplayItemsGenerator {
             public RegistrateDisplayItemsGenerator() {}
-
-            @OnlyIn(Dist.CLIENT)
-            private static Predicate<Item> makeClient3dItemPredicate() {
-                return item -> {
-                    ItemRenderer itemRenderer = Minecraft.getInstance()
-                        .getItemRenderer();
-                    BakedModel model = itemRenderer.getModel(new ItemStack(item), null, null, 0);
-                    return model.isGui3d();
-                };
-            }
 
             @Override
             public void accept(@Nonnull ItemDisplayParameters parameters, @Nonnull Output output) {
