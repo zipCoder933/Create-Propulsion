@@ -1,12 +1,12 @@
 modLoader="javafml" #mandatory
 loaderVersion="${loader_version_range}"
-license="MIT License"
+license="MIT"
 [[mods]]
 modId="createpropulsion"
 version="0.1.0"
 displayName="Create: Propulsion"
 # A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="createpropulsion.png" #optional
+logoFile="icon.png"
 authors="Sergey Feduk"
 modClass="com.deltasf.createpropulsion.CreatePropulsion"
 
