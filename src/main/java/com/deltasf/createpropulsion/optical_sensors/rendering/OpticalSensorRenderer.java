@@ -145,6 +145,7 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
 
         //Rendering setup
         poseStack.pushPose();
+        //RenderType
         VertexConsumer buffer = bufferSource.getBuffer(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
         Matrix4f pose = poseStack.last().pose();
 

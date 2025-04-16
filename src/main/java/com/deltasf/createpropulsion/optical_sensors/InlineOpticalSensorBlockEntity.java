@@ -150,6 +150,7 @@ public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
             BlockState updatedState = state.setValue(InlineOpticalSensorBlock.POWER, newPower).setValue(InlineOpticalSensorBlock.POWERED, newPower > 0);
             level.setBlock(pos, updatedState, Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS);
             
+            //TODO: DO WE LIKE REALLY NEED TO UPDATE THE BLOCK IN FRONT OF THE SENSOR, OR WAS I JUST WRONG WHEN I WROTE THIS?
             Direction facingDir = state.getValue(InlineOpticalSensorBlock.FACING);
             BlockPos adjacentPos = pos.relative(facingDir);
             level.updateNeighborsAt(adjacentPos, state.getBlock());

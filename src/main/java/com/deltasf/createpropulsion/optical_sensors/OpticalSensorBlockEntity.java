@@ -10,6 +10,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringB
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -55,6 +56,10 @@ public class OpticalSensorBlockEntity extends InlineOpticalSensorBlockEntity {
             //Update block
             BlockState updatedState = state.setValue(OpticalSensorBlock.POWER, newPower).setValue(OpticalSensorBlock.POWERED, newPower > 0);
             level.setBlock(pos, updatedState, Block.UPDATE_CLIENTS | Block.UPDATE_NEIGHBORS);
+            //Update block behind
+            Direction facingDir = state.getValue(InlineOpticalSensorBlock.FACING).getOpposite();
+            BlockPos adjacentPos = pos.relative(facingDir);
+            level.updateNeighborsAt(adjacentPos, state.getBlock());
         }
     }
 

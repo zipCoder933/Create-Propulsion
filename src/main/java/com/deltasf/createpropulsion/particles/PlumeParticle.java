@@ -2,7 +2,6 @@ package com.deltasf.createpropulsion.particles;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -40,7 +39,6 @@ public class PlumeParticle extends SimpleAnimatedParticle {
 
     @Override
     public void tick(){
-        
         this.move();
         this.setSpriteFromAge(this.sprites);
         //Move and fade
@@ -50,16 +48,16 @@ public class PlumeParticle extends SimpleAnimatedParticle {
     }
     
     private void move(){
-        float frameTimeSeconds = Minecraft.getInstance().getDeltaFrameTime();
+        double spmul = 0.144; //Temp multiplier as a replacement for baseline dt
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
         if (this.age++ >= this.lifetime) {
             this.remove();
         } else {
-            double moveX = this.dx * frameTimeSeconds;
-            double moveY = this.dy * frameTimeSeconds;
-            double moveZ = this.dz * frameTimeSeconds;
+            double moveX = this.dx * spmul;
+            double moveY = this.dy * spmul;
+            double moveZ = this.dz * spmul;
             this.move(moveX, moveY, moveZ);
             this.dx *= (double)this.friction;
             this.dy *= (double)this.friction;
@@ -68,7 +66,6 @@ public class PlumeParticle extends SimpleAnimatedParticle {
                 this.dx *= (double)0.7F;
                 this.dz *= (double)0.7F;
             }
-
         }
     }
 
