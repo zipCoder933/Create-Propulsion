@@ -42,6 +42,7 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 
 import net.minecraft.network.chat.Component;
 
+import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
 import com.deltasf.createpropulsion.particles.ParticleTypes;
 import com.deltasf.createpropulsion.particles.PlumeParticleData;
@@ -163,7 +164,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             //Consume fluid
             tank.getPrimaryHandler().drain(consumption, IFluidHandler.FluidAction.EXECUTE);
             //Calculate thrust
-            thrust = BASE_MAX_THRUST * thrustPercentage * properties.thrustMultiplier;
+            thrust = BASE_MAX_THRUST * Config.THRUSTER_THRUST_MULTIPLIER.get() * thrustPercentage * properties.thrustMultiplier;
         }
         thrusterData.setThrust(thrust);
     }
@@ -173,7 +174,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     }
 
     private void emitParticles(Level level, BlockPos pos, BlockState state, ThrusterBlockEntity blockEntity){
-        if (blockEntity.emptyBlocks == 0) return; //Obstructed
+        if (blockEntity.emptyBlocks == 0) return;
         int power = state.getValue(POWER);
         if (power == 0) return;
         if (!validFluid()) return; 

@@ -156,6 +156,9 @@ public class CreatePropulsion {
     public class TooltipHandler {
         @SubscribeEvent
         public static void addToItemTooltip(ItemTooltipEvent event) {
+            //TODO: Some tooltips contain values which can be modified with config (IOS max raycast distance, thruster thrust)
+            //TODO: Those tooltips should update dynamically to display actual values
+
             //Looked this up in CDG
             Item item = event.getItemStack().getItem();
             //Skip all items not from this mod

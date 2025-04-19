@@ -1,5 +1,6 @@
 package com.deltasf.createpropulsion.optical_sensors.optical_sensor;
 
+import com.deltasf.createpropulsion.Config;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
@@ -20,7 +21,7 @@ public class OpticalSensorDistanceScrollBehaviour extends ScrollValueBehaviour {
     @Override
     public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
         ImmutableList<Component> row = ImmutableList.of(Lang.builder().text("\u2191").component());
-        return new ValueSettingsBoard(label, 64, 8, row, new ValueSettingsFormatter(this::formatValue));
+        return new ValueSettingsBoard(label, Config.OPTICAL_SENSOR_MAX_DISTANCE.get(), 8, row, new ValueSettingsFormatter(this::formatValue));
     }
 
     @Override

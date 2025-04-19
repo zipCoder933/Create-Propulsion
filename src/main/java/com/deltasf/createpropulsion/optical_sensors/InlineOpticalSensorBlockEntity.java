@@ -26,12 +26,11 @@ import org.joml.Quaterniondc;
 import org.joml.Vector3d;
 
 import com.deltasf.createpropulsion.CreatePropulsion;
+import com.deltasf.createpropulsion.Config;
 import com.mojang.datafixers.util.Pair;
 
 public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
     private int currentTick = -1; // -1 to run raycast immediately after placement
-    private static final int TICK_RATE = 5;
-    private static final float RAYCAST_DISTANCE = 16;
     private float raycastDistance = getMaxRaycastDistanceNormalized();
 
     public InlineOpticalSensorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
@@ -51,7 +50,7 @@ public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
     }
 
     protected float getMaxRaycastDistance(){
-        return RAYCAST_DISTANCE;
+        return Config.INLINE_OPTICAL_SENSOR_MAX_DISTANCE.get();
     }
 
     //Adjusts max raycast distance to account for starting point displacement along relative Z axis with a rounding of 0.5 blocks
@@ -70,7 +69,7 @@ public class InlineOpticalSensorBlockEntity extends SmartBlockEntity {
         Level level = this.getLevel(); //Antinullwarnmagic
         if (level == null || level.isClientSide()) return;
         currentTick++;
-        if (currentTick % TICK_RATE != 0) return;
+        if (currentTick % Config.OPTICAL_SENSOR_TICKS_PER_UPDATE.get() != 0) return;
         //Raycast
         performRaycast(level);
     }

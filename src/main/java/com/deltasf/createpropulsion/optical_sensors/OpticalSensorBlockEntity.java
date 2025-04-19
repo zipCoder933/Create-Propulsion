@@ -2,6 +2,7 @@ package com.deltasf.createpropulsion.optical_sensors;
 
 import java.util.List;
 
+import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
 import com.deltasf.createpropulsion.optical_sensors.optical_sensor.OpticalSensorDistanceScrollBehaviour;
 import com.deltasf.createpropulsion.optical_sensors.optical_sensor.OpticalSensorFilterValueBox;
@@ -18,7 +19,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class OpticalSensorBlockEntity extends InlineOpticalSensorBlockEntity {
-    private static final int BASE_MAX_RAYCAST_DISTANCE = 64;
     private FilteringBehaviour filtering;
     public ScrollValueBehaviour targetDistance;
 
@@ -39,7 +39,7 @@ public class OpticalSensorBlockEntity extends InlineOpticalSensorBlockEntity {
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         behaviours.add(filtering = new FilteringBehaviour(this, new OpticalSensorFilterValueBox(true)));
-        behaviours.add(targetDistance = new OpticalSensorDistanceScrollBehaviour(this).between(1, BASE_MAX_RAYCAST_DISTANCE));
+        behaviours.add(targetDistance = new OpticalSensorDistanceScrollBehaviour(this).between(1, Config.OPTICAL_SENSOR_MAX_DISTANCE.get()));
         targetDistance.setValue(32);
     }
 
