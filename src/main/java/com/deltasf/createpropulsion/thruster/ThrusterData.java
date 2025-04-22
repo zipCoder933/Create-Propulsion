@@ -3,7 +3,6 @@ package com.deltasf.createpropulsion.thruster;
 import org.joml.Vector3d;
 
 public class ThrusterData {
-    //Well, thrust
     private volatile float thrust;
     public float getThrust() { return thrust; }
     public void setThrust(float thrust) { this.thrust = thrust; }

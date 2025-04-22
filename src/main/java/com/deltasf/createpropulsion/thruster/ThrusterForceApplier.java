@@ -7,10 +7,9 @@ import org.valkyrienskies.core.impl.game.ships.PhysShipImpl;
 import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import org.valkyrienskies.mod.common.ValkyrienSkiesMod;
 import org.valkyrienskies.mod.common.util.VectorConversionsMCKt;
+import net.minecraft.core.BlockPos;
 
 import com.deltasf.createpropulsion.ship.IForceApplier;
-
-import net.minecraft.core.BlockPos;
 
 //Thruster math is no longer taken from any other mod and obfuscated to look like i did this myself
 public class ThrusterForceApplier implements IForceApplier {
