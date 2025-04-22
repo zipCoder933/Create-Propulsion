@@ -17,7 +17,7 @@ public class Config {
         BUILDER.push("Configuration");
         
         THRUSTER_THRUST_MULTIPLIER = BUILDER.comment("Thruster thrust is multiplied by that.").define("Thrust multiplier", 1.0f);
-        OPTICAL_SENSOR_TICKS_PER_UPDATE = BUILDER.comment("How many ticks between casting a ray. Lower values are more precise, but can have an effect on performance.")
+        OPTICAL_SENSOR_TICKS_PER_UPDATE = BUILDER.comment("How many ticks between casting a ray. Lower values are more precise, but can have negative effect on performance.")
             .defineInRange("Optical sensor tick rate", 5, 1, 100);
         INLINE_OPTICAL_SENSOR_MAX_DISTANCE = BUILDER.comment("Length of the raycast ray.")
             .defineInRange("Inline optical sensor max raycast distance", 16, 4, 32);
