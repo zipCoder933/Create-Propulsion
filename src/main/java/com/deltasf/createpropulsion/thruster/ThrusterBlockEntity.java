@@ -58,7 +58,6 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     private BlockState state;
     private int emptyBlocks;
     //Ticking
-    private static final int TICK_RATE = 10;
     private int currentTick = 0;
     private boolean isThrustDirty = false;
     //Particles
@@ -136,11 +135,12 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         super.tick();
         currentTick++;
         
-        if (!(isThrustDirty || currentTick % TICK_RATE == 0)) {
+        int tick_rate = Config.THRUSTER_TICKS_PER_UPDATE.get();
+        if (!(isThrustDirty || currentTick % tick_rate == 0)) {
             return;
         }
         state = getBlockState();
-        if (currentTick % (TICK_RATE * 2) == 0) {
+        if (currentTick % (tick_rate * 2) == 0) {
             //Every second fluid tick update obstruction
             int previousEmptyBlocks = emptyBlocks;
             calculateObstruction(level, worldPosition, state.getValue(FACING));
@@ -155,12 +155,11 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         int power = state.getValue(POWER);
         if (validFluid() && power > 0){
             var properties = fluidsProperties.get(fluidStack().getRawFluid());
-
             float powerPercentage = power / 15.0f;
             //Redstone power clamped by obstruction value
             float obstruction = calculateObstructionEffect();
             float thrustPercentage = Math.min(powerPercentage, obstruction);
-            int consumption =  obstruction > 0 ? (int)Math.ceil(powerPercentage * properties.consumptionMultiplier * 1.5f * TICK_RATE) : 0;
+            int consumption =  obstruction > 0 ? (int)Math.ceil(powerPercentage * properties.consumptionMultiplier * 1.5f * tick_rate) : 0;
             //Consume fluid
             tank.getPrimaryHandler().drain(consumption, IFluidHandler.FluidAction.EXECUTE);
             //Calculate thrust
