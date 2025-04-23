@@ -10,6 +10,7 @@ public class Config {
 
     //Thruster
     public static final ForgeConfigSpec.ConfigValue<Float> THRUSTER_THRUST_MULTIPLIER;
+    public static final ForgeConfigSpec.ConfigValue<Float> THRUSTER_CONSUMPTION_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<Integer> THRUSTER_MAX_SPEED;
     public static final ForgeConfigSpec.ConfigValue<Integer> THRUSTER_TICKS_PER_UPDATE;
     //Optical sensors
@@ -20,7 +21,10 @@ public class Config {
 
     static {
         BUILDER.push("Thruster");
-            THRUSTER_THRUST_MULTIPLIER = BUILDER.comment("Thruster thrust is multiplied by that.").define("Thrust multiplier", 1.0f);
+            THRUSTER_THRUST_MULTIPLIER = BUILDER.comment("Thrust is multiplied by that.")
+                .define("Thrust multiplier", 1.0f);
+            THRUSTER_CONSUMPTION_MULTIPLIER = BUILDER.comment("Fuel consumption is multiplied by that.")
+                .define("Fuel consumption", 1.0f);
             THRUSTER_MAX_SPEED = BUILDER.comment("Thrusters stop accelerate ships upon reaching this speed. Defined in blocks per second.")
                 .defineInRange("Thruster max speed", 100, 10, 200);
             THRUSTER_TICKS_PER_UPDATE = BUILDER.comment("Thruster tick rate. Lower values make fluid consumption a little more precise.")
