@@ -51,7 +51,7 @@ import com.jesz.createdieselgenerators.fluids.FluidRegistry;
 @SuppressWarnings({ "deprecation", "unchecked"})
 public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     private static final int OBSTRUCTION_LENGTH = 10; //Prob should be a config
-    private static final int BASE_MAX_THRUST = 200000; // 200 kN
+    public static final int BASE_MAX_THRUST = 200000; // 200 kN
     //Thruster data
     private ThrusterData thrusterData;
     public SmartFluidTankBehaviour tank;

@@ -156,15 +156,13 @@ public class CreatePropulsion {
     public class TooltipHandler {
         @SubscribeEvent
         public static void addToItemTooltip(ItemTooltipEvent event) {
-            //TODO: Some tooltips contain values which can be modified with config (IOS max raycast distance, thruster thrust)
-            //TODO: Those tooltips should update dynamically to display actual values
-
             //Looked this up in CDG
             Item item = event.getItemStack().getItem();
             //Skip all items not from this mod
             if(ForgeRegistries.ITEMS.getKey(item).getNamespace() != ID)
                 return;
             String path = ID + "." + ForgeRegistries.ITEMS.getKey(item).getPath();
+
             List<Component> tooltip = event.getToolTip();
             //Add Create "Hold Shift for summary"
             List<Component> tooltipList = new ArrayList<>();
@@ -172,7 +170,29 @@ public class CreatePropulsion {
                 if (Screen.hasShiftDown()) {
                     tooltipList.add(Lang.translateDirect("tooltip.holdForDescription", Component.translatable("create.tooltip.keyShift").withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.DARK_GRAY));
                     tooltipList.add(Component.empty());
-                    tooltipList.addAll(TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.summary").getString(), Palette.STANDARD_CREATE));
+                    
+                    //Yeah this is VERY UGLY, I know but I don't want to add interface and implement custom handling for that interface
+                    boolean modifiedSummary = false;
+                    String summary = "";
+                    if (item == THRUSTER_BLOCK.asItem()) {
+                        int thrusterStrength = Math.round(ThrusterBlockEntity.BASE_MAX_THRUST / 1000.0f * Config.THRUSTER_THRUST_MULTIPLIER.get());
+                        summary = Component.translatable(path + ".tooltip.summary").getString().replace("{}", String.valueOf(thrusterStrength));
+                        modifiedSummary = true;
+                    }
+
+                    if (item == INLINE_OPTICAL_SENSOR_BLOCK.asItem()) {
+                        //int thrusterStrength = Math.round(ThrusterBlockEntity.BASE_MAX_THRUST / 1000.0f * Config.THRUSTER_THRUST_MULTIPLIER.get());
+                        int raycastDistance = Config.INLINE_OPTICAL_SENSOR_MAX_DISTANCE.get();
+                        summary = Component.translatable(path + ".tooltip.summary").getString().replace("{}", String.valueOf(raycastDistance));
+                        modifiedSummary = true;
+                    }
+
+                    if (modifiedSummary) {
+                        tooltipList.addAll(TooltipHelper.cutStringTextComponent(summary, Palette.STANDARD_CREATE));
+                    } else {
+                        tooltipList.addAll(TooltipHelper.cutStringTextComponent(Component.translatable(path + ".tooltip.summary").getString(), Palette.STANDARD_CREATE));
+                    }
+
                     //Yeah this only supports up to 2 conditions
                     if(!Component.translatable(path + ".tooltip.condition1").getString().equals(path + ".tooltip.condition1")) {
                         tooltipList.add(Component.empty());

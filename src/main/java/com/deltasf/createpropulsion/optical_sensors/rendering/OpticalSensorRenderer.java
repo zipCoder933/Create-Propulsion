@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlock;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlockEntity;
@@ -15,15 +16,20 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringRenderer;
 
 public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOpticalSensorBlockEntity>{
@@ -96,6 +102,14 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         //Filtering if we are OPTICAL_SENSOR_BLOCK_ENTITY
         if (blockEntity.getType() == CreatePropulsion.OPTICAL_SENSOR_BLOCK_ENTITY.get()) {
             FilteringRenderer.renderOnBlockEntity(blockEntity, partialTicks, poseStack, bufferSource, light, overlay);
+        }
+        //Skip rendering if no goggles and configured for that
+        if (Config.OPTICAL_SENSOR_VISIBLE_ONLY_WITH_GOGGLES.get()) {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                ItemStack headItemStack = player.getItemBySlot(EquipmentSlot.HEAD);
+                if (headItemStack.getItem() != AllItems.GOGGLES.get()) return; //No goggles -> no rendering for ya
+            }
         }
             
         //Laser beam
