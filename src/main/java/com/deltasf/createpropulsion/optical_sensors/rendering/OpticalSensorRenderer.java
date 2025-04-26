@@ -2,7 +2,6 @@ package com.deltasf.createpropulsion.optical_sensors.rendering;
 
 import javax.annotation.Nonnull;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -11,8 +10,8 @@ import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlock;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlockEntity;
+import com.deltasf.createpropulsion.utility.TranslucentGeometryRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -157,56 +156,64 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         this.localEndPos.add(this.offset_TR, this.eTopRight);
         this.localEndPos.add(this.offset_TL, this.eTopLeft);
 
-        //Rendering setup
-        poseStack.pushPose();
-        VertexConsumer buffer = bufferSource.getBuffer(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
-        Matrix4f pose = poseStack.last().pose();
 
         Vector4f startColor = powered ? START_POWERED_COLOR : START_COLOR;
         Vector4f endColor = powered ? END_POWERED_COLOR : END_COLOR;
 
-        //Normals, I actually flip them every second mod update just because I have no clue if they are correct or not
-        this.normalBottom.set(this.upVector);
-        this.normalRight.set(this.sideVector).negate();
-        this.normalTop.set(this.upVector).negate();
-        this.normalLeft.set(this.sideVector);
-
-        //Rendering
-        drawQuad(buffer, pose, this.sBottomLeft, this.sBottomRight, this.eBottomRight, this.eBottomLeft, startColor, endColor, this.normalBottom);
-        drawQuad(buffer, pose, this.sBottomRight, this.sTopRight, this.eTopRight, this.eBottomRight, startColor, endColor, this.normalRight);
-        drawQuad(buffer, pose, this.sTopRight, this.sTopLeft, this.eTopLeft, this.eTopRight, startColor, endColor, this.normalTop);
-        drawQuad(buffer, pose, this.sTopLeft, this.sBottomLeft, this.eBottomLeft, this.eTopLeft, startColor, endColor, this.normalLeft);
-
-        poseStack.popPose();
+        //Rendering setup
+        PoseStack.Pose pose = poseStack.last();
+        var brd = new BeamRenderData(startColor, endColor, this.sideVector, this.upVector, this.sBottomLeft, 
+            this.sBottomRight, this.sTopRight, this.sTopLeft, this.eBottomLeft, this.eBottomRight, this.eTopRight, this.eTopLeft, pose);
+        TranslucentGeometryRenderer.scheduleBeamRender(brd);
     }
 
-    private void drawQuad(VertexConsumer buffer, Matrix4f pose,
-                          Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4,
-                          Vector4f startColor, Vector4f endColor, Vector3f normal) {
+    public class BeamRenderData {
+        public Vector4f startColor;
+        public Vector4f endColor;
 
-        // Vertex 1 (Start)
-        buffer.vertex(pose, v1.x(), v1.y(), v1.z())
-              .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
-              .normal(normal.x(), normal.y(), normal.z())
-              .endVertex();
+        public Vector3f sideVector;
+        public Vector3f upVector;
 
-        // Vertex 2 (Start)
-        buffer.vertex(pose, v2.x(), v2.y(), v2.z())
-              .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
-              .normal(normal.x(), normal.y(), normal.z())
-              .endVertex();
-
-        // Vertex 3 (End)
-        buffer.vertex(pose, v3.x(), v3.y(), v3.z())
-              .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
-              .normal(normal.x(), normal.y(), normal.z())
-              .endVertex();
-
-        // Vertex 4 (End)
-        buffer.vertex(pose, v4.x(), v4.y(), v4.z())
-              .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
-              .normal(normal.x(), normal.y(), normal.z())
-              .endVertex();
+        public Vector3f sBottomLeft;
+        public Vector3f sBottomRight;
+        public Vector3f sTopRight;
+        public Vector3f sTopLeft;
+    
+        public Vector3f eBottomLeft;
+        public Vector3f eBottomRight;
+        public Vector3f eTopRight;
+        public Vector3f eTopLeft;
+        public final PoseStack.Pose poseSnapshot;
+        
+        public BeamRenderData(
+            Vector4f startColor,
+            Vector4f endColor,
+            Vector3f sideVector,
+            Vector3f upVector,
+            Vector3f sBottomLeft,
+            Vector3f sBottomRight,
+            Vector3f sTopRight,
+            Vector3f sTopLeft,
+            Vector3f eBottomLeft,
+            Vector3f eBottomRight,
+            Vector3f eTopRight,
+            Vector3f eTopLeft,
+            PoseStack.Pose poseSnapshot
+        ) {
+            this.startColor = new Vector4f(startColor);
+            this.endColor = new Vector4f(endColor);
+            this.sideVector = new Vector3f(sideVector);
+            this.upVector = new Vector3f(upVector);
+            this.sBottomLeft = new Vector3f(sBottomLeft);
+            this.sBottomRight = new Vector3f(sBottomRight);
+            this.sTopRight = new Vector3f(sTopRight);
+            this.sTopLeft = new Vector3f(sTopLeft);
+            this.eBottomLeft = new Vector3f(eBottomLeft);
+            this.eBottomRight = new Vector3f(eBottomRight);
+            this.eTopRight = new Vector3f(eTopRight);
+            this.eTopLeft = new Vector3f(eTopLeft);
+            this.poseSnapshot = poseSnapshot;
+        }
     }
     
     @Override
