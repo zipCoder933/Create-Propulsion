@@ -12,6 +12,7 @@ import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlock;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlockEntity;
 import com.deltasf.createpropulsion.utility.TranslucentGeometryRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -45,16 +46,16 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
 
     // Colors
     private static final Vector4f START_COLOR = new Vector4f(
-        RAY_COLOR.x(), RAY_COLOR.y(), RAY_COLOR.z(), RAY_COLOR.w() * (START_ALPHA * 2.0f)
+        RAY_COLOR.x(), RAY_COLOR.y(), RAY_COLOR.z(), RAY_COLOR.w() * START_ALPHA
     );
     private static final Vector4f START_POWERED_COLOR = new Vector4f(
-        RAY_POWERED_COLOR.x(), RAY_POWERED_COLOR.y(), RAY_POWERED_COLOR.z(), RAY_POWERED_COLOR.w() * (START_ALPHA * 2.0f)
+        RAY_POWERED_COLOR.x(), RAY_POWERED_COLOR.y(), RAY_POWERED_COLOR.z(), RAY_POWERED_COLOR.w() * START_ALPHA
     );
     private static final Vector4f END_COLOR = new Vector4f(
-        RAY_COLOR.x(), RAY_COLOR.y(), RAY_COLOR.z(), RAY_COLOR.w() * (END_ALPHA * 2.0f)
+        RAY_COLOR.x(), RAY_COLOR.y(), RAY_COLOR.z(), RAY_COLOR.w() * END_ALPHA
     );
     private static final Vector4f END_POWERED_COLOR = new Vector4f(
-        RAY_POWERED_COLOR.x(), RAY_POWERED_COLOR.y(), RAY_POWERED_COLOR.z(), RAY_POWERED_COLOR.w() * (END_ALPHA * 2.0f)
+        RAY_POWERED_COLOR.x(), RAY_POWERED_COLOR.y(), RAY_POWERED_COLOR.z(), RAY_POWERED_COLOR.w() * END_ALPHA
     );
 
     // Positions
@@ -156,23 +157,35 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         this.localEndPos.add(this.offset_TR, this.eTopRight);
         this.localEndPos.add(this.offset_TL, this.eTopLeft);
 
+        this.normalBottom.set(this.upVector);
+        this.normalRight.set(this.sideVector).negate();
+        this.normalTop.set(this.upVector).negate();
+        this.normalLeft.set(this.sideVector);
 
         Vector4f startColor = powered ? START_POWERED_COLOR : START_COLOR;
         Vector4f endColor = powered ? END_POWERED_COLOR : END_COLOR;
 
         //Rendering setup
         PoseStack.Pose pose = poseStack.last();
-        var brd = new BeamRenderData(startColor, endColor, this.sideVector, this.upVector, this.sBottomLeft, 
+        var brd = new BeamRenderData(startColor, endColor, this.normalBottom, this.normalRight, this.normalTop, this.normalLeft, this.sBottomLeft,  
             this.sBottomRight, this.sTopRight, this.sTopLeft, this.eBottomLeft, this.eBottomRight, this.eTopRight, this.eTopLeft, pose);
         TranslucentGeometryRenderer.scheduleBeamRender(brd);
+
+        //The first pass
+        poseStack.pushPose();
+        VertexConsumer buffer = bufferSource.getBuffer(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
+        TranslucentGeometryRenderer.drawBeam(buffer, brd);
+        poseStack.popPose();
     }
 
     public class BeamRenderData {
         public Vector4f startColor;
         public Vector4f endColor;
 
-        public Vector3f sideVector;
-        public Vector3f upVector;
+        public Vector3f normalBottom;
+        public Vector3f normalRight;
+        public Vector3f normalTop;
+        public Vector3f normalLeft;
 
         public Vector3f sBottomLeft;
         public Vector3f sBottomRight;
@@ -188,8 +201,12 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         public BeamRenderData(
             Vector4f startColor,
             Vector4f endColor,
-            Vector3f sideVector,
-            Vector3f upVector,
+
+            Vector3f normalBottom,
+            Vector3f normalRight,
+            Vector3f normalTop,
+            Vector3f normalLeft,
+
             Vector3f sBottomLeft,
             Vector3f sBottomRight,
             Vector3f sTopRight,
@@ -202,8 +219,12 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         ) {
             this.startColor = new Vector4f(startColor);
             this.endColor = new Vector4f(endColor);
-            this.sideVector = new Vector3f(sideVector);
-            this.upVector = new Vector3f(upVector);
+
+            this.normalBottom = new Vector3f(normalBottom);
+            this.normalRight = new Vector3f(normalRight);
+            this.normalTop = new Vector3f(normalTop);
+            this.normalLeft = new Vector3f(normalLeft);
+
             this.sBottomLeft = new Vector3f(sBottomLeft);
             this.sBottomRight = new Vector3f(sBottomRight);
             this.sTopRight = new Vector3f(sTopRight);
