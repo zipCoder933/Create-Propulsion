@@ -51,7 +51,7 @@ import com.drmangotea.tfmg.registry.TFMGFluids;
 @SuppressWarnings({"deprecation", "unchecked"})
 public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     private static final int OBSTRUCTION_LENGTH = 10; //Prob should be a config
-    public static final int BASE_MAX_THRUST = 200000; // 200 kN
+    public static final int BASE_MAX_THRUST = 400000;
     //Thruster data
     private ThrusterData thrusterData;
     public SmartFluidTankBehaviour tank;
