@@ -8,8 +8,9 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import com.deltasf.createpropulsion.CreatePropulsion;
+import com.deltasf.createpropulsion.optical_sensors.rendering.BeamRenderData;
 import com.deltasf.createpropulsion.optical_sensors.rendering.OpticalSensorBeamRenderType;
-import com.deltasf.createpropulsion.optical_sensors.rendering.OpticalSensorRenderer.BeamRenderData;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -20,7 +21,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = CreatePropulsion.ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class TranslucentGeometryRenderer {
+public class TranslucentBeamRenderer {
     private static final Queue<BeamRenderData> RENDER_QUEUE = new ConcurrentLinkedQueue<>();
 
     public static void scheduleBeamRender(BeamRenderData data) {
