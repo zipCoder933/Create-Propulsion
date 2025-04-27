@@ -183,7 +183,6 @@ public class CreatePropulsion {
                     }
 
                     if (item == INLINE_OPTICAL_SENSOR_BLOCK.asItem()) {
-                        //int thrusterStrength = Math.round(ThrusterBlockEntity.BASE_MAX_THRUST / 1000.0f * Config.THRUSTER_THRUST_MULTIPLIER.get());
                         int raycastDistance = Config.INLINE_OPTICAL_SENSOR_MAX_DISTANCE.get();
                         summary = Component.translatable(path + ".tooltip.summary").getString().replace("{}", String.valueOf(raycastDistance));
                         modifiedSummary = true;

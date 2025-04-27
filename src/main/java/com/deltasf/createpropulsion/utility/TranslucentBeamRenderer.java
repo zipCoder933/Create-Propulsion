@@ -28,18 +28,21 @@ public class TranslucentBeamRenderer {
         RENDER_QUEUE.offer(data);
     }
 
+    // The idea behind this is to perform two render passes:
+    // First one happens BEFORE translucent world geometry and therefore renders beam behind it. It is located inside OpticalSensorRender
+    // Second one happens AFTER ALL translucent world geometry and therefore renders beam above it
+    // Both passes respect depth buffer and do not write to it in order to preserve all other translucent geometry
+    // This however results in doubling of alpha in regions where both passes overlap, while in regions of no overlap alpha remains undoubled
+    // The only way to fix that seems to be using stencil buffer which is set in the first pass and read in the second, and used in the second to double alpha
+
     @SubscribeEvent
     public static void onRenderLevelStageEnd(RenderLevelStageEvent event) {
-        // The idea behind this is to perform two render passes:
-        // First one happens BEFORE translucent world geometry and therefore renders beam behind it. It is located inside OpticalSensorRender
-        // Second one happens AFTER ALL translucent world geometry and therefore renders beam above it
+        //This is second pass (after translucent)
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             renderAllBeams(event.getPoseStack());
             RENDER_QUEUE.clear();
         }
-        // Both passes respect depth buffer and do not write to it in order to preserve all other translucent geometry
-        // This however results in doubling of alpha in regions where both passes overlap, while in regions of no overlap alpha remains undoubled
-        // The only way to fix that seems to be using stencil buffer which is set in the first pass and read in the second, and used in the second to double alpha
+        
     }
 
     private static void renderAllBeams(PoseStack poseStack){

@@ -169,13 +169,13 @@ public class OpticalSensorRenderer extends SafeBlockEntityRenderer<InlineOptical
         PoseStack.Pose pose = poseStack.last();
         var brd = new BeamRenderData(startColor, endColor, this.normalBottom, this.normalRight, this.normalTop, this.normalLeft, this.sBottomLeft,  
             this.sBottomRight, this.sTopRight, this.sTopLeft, this.eBottomLeft, this.eBottomRight, this.eTopRight, this.eTopLeft, pose);
-        TranslucentBeamRenderer.scheduleBeamRender(brd);
-
-        //The first pass
+        //The first pass (behind translucent)
         poseStack.pushPose();
         VertexConsumer buffer = bufferSource.getBuffer(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
         TranslucentBeamRenderer.drawBeam(buffer, brd);
         poseStack.popPose();
+        //Schedule the second pass
+        TranslucentBeamRenderer.scheduleBeamRender(brd);
     }
 
     
