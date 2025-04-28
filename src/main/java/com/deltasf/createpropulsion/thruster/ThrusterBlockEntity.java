@@ -52,6 +52,7 @@ import com.drmangotea.tfmg.registry.TFMGFluids;
 public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     private static final int OBSTRUCTION_LENGTH = 10; //Prob should be a config
     public static final int BASE_MAX_THRUST = 400000;
+    public static final float BASE_FUEL_CONSUMPTION = 2;
     //Thruster data
     private ThrusterData thrusterData;
     public SmartFluidTankBehaviour tank;
@@ -171,7 +172,8 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     }
 
     private int calculateFuelConsumption(float powerPercentage, float fluidPropertiesConsumptionMultiplier, int tick_rate){
-        return (int)Math.ceil(Config.THRUSTER_CONSUMPTION_MULTIPLIER.get() * powerPercentage * fluidPropertiesConsumptionMultiplier * 1.5f * tick_rate);
+        float base_consumption = BASE_FUEL_CONSUMPTION * Config.THRUSTER_CONSUMPTION_MULTIPLIER.get();
+        return (int)Math.ceil(base_consumption * powerPercentage * fluidPropertiesConsumptionMultiplier * tick_rate);
     }
 
     public void clientTick(Level level, BlockPos pos, BlockState state, ThrusterBlockEntity blockEntity){
