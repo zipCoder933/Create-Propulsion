@@ -68,19 +68,21 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     private static Dictionary<Fluid, FluidThrusterProperties> fluidsProperties = new Hashtable<Fluid, FluidThrusterProperties>();
     static {
         //Not sure where to show these in game, perhaps in item tooltip if wearing goggles/design goggles
-        //Defined fuels
+        //Defined fuels, should really be json for datapacks, but I'm lazy so not yet
         if (CreatePropulsion.CDG_ACTIVE) {
             fluidsProperties.put(FluidRegistry.PLANT_OIL.get().getSource(), new FluidThrusterProperties(0.8f, 1.1f));
             fluidsProperties.put(FluidRegistry.BIODIESEL.get().getSource(), new FluidThrusterProperties(0.9f, 1f));
             fluidsProperties.put(FluidRegistry.DIESEL.get().getSource(), new FluidThrusterProperties(1.0f, 0.9f));
             fluidsProperties.put(FluidRegistry.GASOLINE.get().getSource(), new FluidThrusterProperties(1.05f, 0.95f));
             fluidsProperties.put(FluidRegistry.ETHANOL.get().getSource(), new FluidThrusterProperties(0.85f, 1.2f));
-        } if (CreatePropulsion.TFMG_ACTIVE) {
+        } 
+        if (CreatePropulsion.TFMG_ACTIVE) {
             fluidsProperties.put(TFMGFluids.NAPHTHA.get().getSource(), new FluidThrusterProperties(0.95f, 1.0f));
             fluidsProperties.put(TFMGFluids.KEROSENE.get().getSource(), new FluidThrusterProperties(1.0f, 0.9f));
             fluidsProperties.put(TFMGFluids.GASOLINE.get().getSource(), new FluidThrusterProperties(1.05f, 0.95f));
             fluidsProperties.put(TFMGFluids.DIESEL.get().getSource(), new FluidThrusterProperties(1.0f, 0.9f));     
-        } else {
+        }
+        if (fluidsProperties.isEmpty()) {
             fluidsProperties.put(net.minecraft.world.level.material.Fluids.LAVA, FluidThrusterProperties.DEFAULT);
         }
         //Fuels from tags
