@@ -30,15 +30,15 @@ public class TranslucentBeamRenderer {
 
     // The idea behind this is to perform two render passes:
     // First one happens BEFORE translucent world geometry and therefore renders beam behind it. It is located inside OpticalSensorRender
-    // Second one happens AFTER ALL translucent world geometry and therefore renders beam above it
+    // Second one happens AFTER ALL translucent world geometry (including stuff like particles) and therefore renders beam above it
     // Both passes respect depth buffer and do not write to it in order to preserve all other translucent geometry
     // This however results in doubling of alpha in regions where both passes overlap, while in regions of no overlap alpha remains undoubled
     // The only way to fix that seems to be using stencil buffer which is set in the first pass and read in the second, and used in the second to double alpha
-
+    // I assume this is a bad practice but this is what it takes to make stuff render adequately without proper translucentcy sorting
     @SubscribeEvent
     public static void onRenderLevelStageEnd(RenderLevelStageEvent event) {
-        //This is second pass (after translucent)
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
+        //This is second pass (after translucent AND particles)
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
             renderAllBeams(event.getPoseStack());
             RENDER_QUEUE.clear();
         }
@@ -56,13 +56,15 @@ public class TranslucentBeamRenderer {
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
         VertexConsumer buffer = bufferSource.getBuffer(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
-
+        
         //Render all invoked
         for (BeamRenderData data : RENDER_QUEUE) {
             poseStack.pushPose();
             drawBeam(buffer, data);
             poseStack.popPose();
         }
+        //End batch so we do not wait for any more geometry of this type and it does not lag behind at this frame
+        bufferSource.endBatch(OpticalSensorBeamRenderType.SOLID_TRANSLUCENT_BEAM);
     }
 
     public static void drawBeam(VertexConsumer buffer, BeamRenderData data){
