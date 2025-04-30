@@ -60,6 +60,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     private int emptyBlocks;
     //Ticking
     private int currentTick = 0;
+    private int clientTick = 0;
     private boolean isThrustDirty = false;
     //Particles
     private ParticleType<PlumeParticleData> particleType;
@@ -186,18 +187,23 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         if (blockEntity.emptyBlocks == 0) return;
         int power = state.getValue(ThrusterBlock.POWER);
         if (power == 0) return;
-        if (!validFluid()) return; 
+        if (!validFluid()) return;
+        //Limit minumum velocity and particle count when power is lower than that
+        int lowestPowerThreshold = 5; 
+        clientTick++;
+        if (power < lowestPowerThreshold && clientTick % 2 == 0) {clientTick = 0; return; }
 
-        float powerPercentage = Math.max(power, 3) / 15.0f;
+        float powerPercentage = Math.max(power, lowestPowerThreshold) / 15.0f;
         float velocity = 4f * powerPercentage;
         float shipVelocityModifier = 0.15f;
 
         Direction direction = state.getValue(ThrusterBlock.FACING);
         Direction oppositeDirection = direction.getOpposite();
 
-        double particleX = pos.getX() + 0.5 + oppositeDirection.getStepX() * 0.85;
-        double particleY = pos.getY() + 0.5 + oppositeDirection.getStepY() * 0.85;
-        double particleZ = pos.getZ() + 0.5 + oppositeDirection.getStepZ() * 0.85;
+        double offsetFromNozzle = 0.875;
+        double particleX = pos.getX() + 0.5 + oppositeDirection.getStepX() * offsetFromNozzle;
+        double particleY = pos.getY() + 0.5 + oppositeDirection.getStepY() * offsetFromNozzle;
+        double particleZ = pos.getZ() + 0.5 + oppositeDirection.getStepZ() * offsetFromNozzle;
 
         Vector3d baseParticleVelocity = new Vector3d(oppositeDirection.getStepX(), oppositeDirection.getStepY(), oppositeDirection.getStepZ()).mul(velocity);
         Vector3d rotatedShipVelocity = new Vector3d();
