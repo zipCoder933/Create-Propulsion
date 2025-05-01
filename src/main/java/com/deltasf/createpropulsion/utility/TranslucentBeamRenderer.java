@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.valkyrienskies.core.impl.shadow.fa;
 
 import com.deltasf.createpropulsion.CreatePropulsion;
 import com.deltasf.createpropulsion.optical_sensors.rendering.BeamRenderData;
@@ -75,8 +74,8 @@ public class TranslucentBeamRenderer {
         Matrix4f pose = data.poseSnapshot.pose();
         // We use this instead of NO_CULL cause the more faces we render the worse alpha duplication issue becomes.
         // Also this method halves amount of faces rendered
-        Minecraft mc = Minecraft.getInstance();
-        var eyes = mc.player.position(); //We expect player not to be null as this is happening in rendering event
+        //Minecraft mc = Minecraft.getInstance();
+        //var eyes = mc.player.position(); //We expect player not to be null as this is happening in rendering event
         //boolean reverse = data.boundingBox.contains(eyes); // TODO: set values based on eyes pos if is inside beam data.aabb
         boolean reverse = false;
         //Rendering
