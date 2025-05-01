@@ -39,7 +39,6 @@ import org.valkyrienskies.mod.common.VSGameUtilsKt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraftforge.registries.tags.ITagManager;
 
 import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
@@ -69,7 +68,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     private static Dictionary<Fluid, FluidThrusterProperties> fluidsProperties = new Hashtable<Fluid, FluidThrusterProperties>();
     static {
         //Not sure where to show these in game, perhaps in item tooltip if wearing goggles/design goggles
-        //Defined fuels, should really be json for datapacks, but I'm lazy so not yet
+        //Should really be json for datapacks, but I'm lazy so not yet
         if (CreatePropulsion.CDG_ACTIVE) {
             fluidsProperties.put(FluidRegistry.PLANT_OIL.get().getSource(), new FluidThrusterProperties(0.8f, 1.1f));
             fluidsProperties.put(FluidRegistry.BIODIESEL.get().getSource(), new FluidThrusterProperties(0.9f, 1f));
@@ -86,14 +85,6 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         if (fluidsProperties.isEmpty()) {
             fluidsProperties.put(net.minecraft.world.level.material.Fluids.LAVA, FluidThrusterProperties.DEFAULT);
         }
-        //Fuels from tags
-        ITagManager<Fluid> fluidTags = ForgeRegistries.FLUIDS.tags();
-        var tagContents = fluidTags.getTag(FORGE_FUEL_TAG);
-        for (Fluid fluid : tagContents) {
-            if (fluidsProperties.get(fluid) == null) {
-                fluidsProperties.put(fluid, FluidThrusterProperties.DEFAULT);
-            }
-        }
     };
 
     private static class FluidThrusterProperties {
@@ -106,6 +97,14 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             this.thrustMultiplier = thrustMultiplier;
             this.consumptionMultiplier = consumptionMultiplier;
         }
+    }
+
+    public FluidThrusterProperties getFuelProperties(Fluid fluid) {
+        //Get properties from lookup, if not found check if they have fuel tag, otherwise this is not a fuel
+        var properties = fluidsProperties.get(fluid);
+        if (properties != null) return properties;
+        if (fluid.is(FORGE_FUEL_TAG)) return FluidThrusterProperties.DEFAULT;
+        return null;
     }
 
     public ThrusterBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
@@ -160,7 +159,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         //Has fluid and powered
         int power = state.getValue(ThrusterBlock.POWER);
         if (validFluid() && power > 0){
-            var properties = fluidsProperties.get(fluidStack().getRawFluid());
+            var properties = getFuelProperties(fluidStack().getRawFluid());
             float powerPercentage = power / 15.0f;
             //Redstone power clamped by obstruction value
             float obstruction = calculateObstructionEffect();
@@ -284,7 +283,8 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
     private boolean validFluid(){
         if (fluidStack().isEmpty()) return false;
-        return fluidsProperties.get(fluidStack().getRawFluid()) != null;
+        var fluid = fluidStack().getRawFluid();
+        return getFuelProperties(fluid) != null;
     }
 
     public void calculateObstruction(Level level, BlockPos pos, Direction forwardDirection){

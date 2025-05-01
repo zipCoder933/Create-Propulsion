@@ -3,6 +3,7 @@ package com.deltasf.createpropulsion.optical_sensors.rendering;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.phys.AABB;
 
 public class BeamRenderData {
     public Vector4f startColor;
@@ -23,6 +24,7 @@ public class BeamRenderData {
     public Vector3f eTopRight;
     public Vector3f eTopLeft;
     public final PoseStack.Pose poseSnapshot;
+    //public final AABB boundingBox;
     
     public BeamRenderData(
         Vector4f startColor,
