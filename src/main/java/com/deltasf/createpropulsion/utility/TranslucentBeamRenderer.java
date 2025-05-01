@@ -77,7 +77,6 @@ public class TranslucentBeamRenderer {
         // Also this method halves amount of faces rendered
         Minecraft mc = Minecraft.getInstance();
         var eyes = mc.player.position(); //We expect player not to be null as this is happening in rendering event
-        System.out.println(eyes.toString());
         //boolean reverse = data.boundingBox.contains(eyes); // TODO: set values based on eyes pos if is inside beam data.aabb
         boolean reverse = false;
         //Rendering
@@ -128,31 +127,31 @@ public class TranslucentBeamRenderer {
                                         Vector3f v1, Vector3f v2, Vector3f v3, Vector3f v4,
                                         Vector4f startColor, Vector4f endColor, Vector3f normal) {
 
-    // Reversing the order and flipping the normal for the new "front" side
-    Vector3f flippedNormal = new Vector3f(-normal.x(), -normal.y(), -normal.z());
+        // Reversing the order and flipping the normal for the new "front" side
+        Vector3f flippedNormal = new Vector3f(-normal.x(), -normal.y(), -normal.z());
 
-    // Vertex 4 (End Color)
-    buffer.vertex(pose, v4.x(), v4.y(), v4.z())
-          .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
-          .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
-          .endVertex();
+        // Vertex 4 (End)
+        buffer.vertex(pose, v4.x(), v4.y(), v4.z())
+            .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
+            .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
+            .endVertex();
 
-    // Vertex 3 (End Color)
-    buffer.vertex(pose, v3.x(), v3.y(), v3.z())
-          .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
-          .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
-          .endVertex();
+        // Vertex 3 (End)
+        buffer.vertex(pose, v3.x(), v3.y(), v3.z())
+            .color(endColor.x(), endColor.y(), endColor.z(), endColor.w())
+            .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
+            .endVertex();
 
-    // Vertex 2 (Start Color)
-    buffer.vertex(pose, v2.x(), v2.y(), v2.z())
-          .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
-          .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
-          .endVertex();
+        // Vertex 2 (Start)
+        buffer.vertex(pose, v2.x(), v2.y(), v2.z())
+            .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
+            .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
+            .endVertex();
 
-    // Vertex 1 (Start Color)
-    buffer.vertex(pose, v1.x(), v1.y(), v1.z())
-          .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
-          .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
-          .endVertex();
+        // Vertex 1 (Start)
+        buffer.vertex(pose, v1.x(), v1.y(), v1.z())
+            .color(startColor.x(), startColor.y(), startColor.z(), startColor.w())
+            .normal(flippedNormal.x(), flippedNormal.y(), flippedNormal.z())
+            .endVertex();
     }
 }
