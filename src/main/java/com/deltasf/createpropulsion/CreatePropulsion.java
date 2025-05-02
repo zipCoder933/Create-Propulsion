@@ -8,7 +8,6 @@ import com.deltasf.createpropulsion.optical_sensors.rendering.OpticalSensorRende
 import com.deltasf.createpropulsion.particles.ParticleTypes;
 import com.deltasf.createpropulsion.thruster.ThrusterBlock;
 import com.deltasf.createpropulsion.thruster.ThrusterBlockEntity;
-import com.deltasf.createpropulsion.utility.TranslucentBeamRenderer;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.Lang;
@@ -111,7 +110,6 @@ public class CreatePropulsion {
         
         //Config
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(TranslucentBeamRenderer.class);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.SPEC);
 
         REGISTRATE.registerEventListeners(modBus);
