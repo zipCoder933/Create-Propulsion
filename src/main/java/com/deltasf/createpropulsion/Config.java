@@ -13,6 +13,7 @@ public class Config {
     public static final ForgeConfigSpec.ConfigValue<Float> THRUSTER_CONSUMPTION_MULTIPLIER;
     public static final ForgeConfigSpec.ConfigValue<Integer> THRUSTER_MAX_SPEED;
     public static final ForgeConfigSpec.ConfigValue<Integer> THRUSTER_TICKS_PER_UPDATE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> THRUSTER_DAMAGE_ENTITIES;
     //Optical sensors
     public static final ForgeConfigSpec.ConfigValue<Integer> OPTICAL_SENSOR_TICKS_PER_UPDATE;
     public static final ForgeConfigSpec.ConfigValue<Integer> INLINE_OPTICAL_SENSOR_MAX_DISTANCE;
@@ -30,6 +31,8 @@ public class Config {
                 .defineInRange("Thruster speed limit", 100, 10, 200);
             THRUSTER_TICKS_PER_UPDATE = BUILDER.comment("Thruster tick rate. Lower values make fluid consumption a little more precise.")
                 .defineInRange("Thruster tick rate", 10, 1, 100);
+            THRUSTER_DAMAGE_ENTITIES = BUILDER.comment("If true - thrusters will damage entities. May have negative effect on performance if a lot of thrusters are used.")
+                .define("Thrusters damage entities", true);
         BUILDER.pop();
 
         BUILDER.push("Optical sensors");

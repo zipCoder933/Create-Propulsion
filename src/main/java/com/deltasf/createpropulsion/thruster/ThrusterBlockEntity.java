@@ -4,13 +4,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -42,6 +47,7 @@ import net.minecraft.tags.TagKey;
 
 import com.deltasf.createpropulsion.Config;
 import com.deltasf.createpropulsion.CreatePropulsion;
+import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlock;
 import com.deltasf.createpropulsion.particles.ParticleTypes;
 import com.deltasf.createpropulsion.particles.PlumeParticleData;
 import com.jesz.createdieselgenerators.fluids.FluidRegistry;
@@ -52,6 +58,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     private static final int OBSTRUCTION_LENGTH = 10; //Prob should be a config
     public static final int BASE_MAX_THRUST = 400000;
     public static final float BASE_FUEL_CONSUMPTION = 2;
+    public static final int TICKS_PER_ENTITY_CHECK = 5;
     //Thruster data
     private ThrusterData thrusterData;
     public SmartFluidTankBehaviour tank;
@@ -141,9 +148,14 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         currentTick++;
         
         int tick_rate = Config.THRUSTER_TICKS_PER_UPDATE.get();
+        boolean isFluidValid = validFluid();
+        int power = state.getValue(ThrusterBlock.POWER);
+        //Damage entities
+        if (Config.THRUSTER_DAMAGE_ENTITIES.get() && isFluidValid && power > 0) doEntityDamageCheck(currentTick);
         if (!(isThrustDirty || currentTick % tick_rate == 0)) {
             return;
         }
+        //Recalculate obstruction
         state = getBlockState();
         if (currentTick % (tick_rate * 2) == 0) {
             //Every second fluid tick update obstruction
@@ -154,11 +166,10 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
                 level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_CLIENTS);
             }
         }
+        //Calculate thrust
         isThrustDirty = false;
         float thrust = 0;
-        //Has fluid and powered
-        int power = state.getValue(ThrusterBlock.POWER);
-        if (validFluid() && power > 0){
+        if (isFluidValid && power > 0){
             var properties = getFuelProperties(fluidStack().getRawFluid());
             float powerPercentage = power / 15.0f;
             //Redstone power clamped by obstruction value
@@ -171,6 +182,40 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             thrust = BASE_MAX_THRUST * Config.THRUSTER_THRUST_MULTIPLIER.get() * thrustPercentage * properties.thrustMultiplier;
         }
         thrusterData.setThrust(thrust);
+    }
+
+    //This is ugly af, fix it and implement all todos
+    @SuppressWarnings("null")
+    private void doEntityDamageCheck(int tick) {
+        if (tick % TICKS_PER_ENTITY_CHECK != 0) return;
+        //TODO: Distance and damage also should be based on thruster power
+        //Generate start and end AABBs
+        Direction toPlume = state.getValue(InlineOpticalSensorBlock.FACING).getOpposite();
+        BlockPos blockBehind = worldPosition.relative(toPlume);
+        int endOffset = emptyBlocks != OBSTRUCTION_LENGTH ? emptyBlocks : OBSTRUCTION_LENGTH + 3; //If not obstructed - bigger damage box
+        BlockPos blockEnd = worldPosition.relative(toPlume, endOffset);
+        AABB startAABB = new AABB(blockBehind);
+        AABB endAABB = new AABB(blockEnd);
+        //Offset starting block in the direction of plume by 0.3 meters to account for nozzle
+        Vec3i normalFacing = toPlume.getNormal();
+        Vec3 startOffsetVector = new Vec3(normalFacing.getX(), normalFacing.getY(), normalFacing.getZ()).scale(0.333f);
+        startAABB = startAABB.move(startOffsetVector);
+        //Generate final aabb and query entities
+        AABB plumeAABB = startAABB.minmax(endAABB);
+        List<Entity> damageCandidates = level.getEntities(null, plumeAABB);
+        //Damage and set on fire entities
+        DamageSource fireDamageSource = level.damageSources().onFire();
+        Vec3 thrusterCenter = worldPosition.getCenter();
+        for (Entity entity : damageCandidates) {
+            if (entity.fireImmune()) continue;
+            Vec3 position = entity.position();
+            //Use square distance cuz faster + damage falloff, tho I guess it feels a bit bad, needs testing
+            float invSqrDistance = 5.0f / (float)Math.max(1, position.distanceToSqr(thrusterCenter));
+            float damageAmount = 3 + invSqrDistance;
+            entity.hurt(fireDamageSource, damageAmount);
+            entity.setSecondsOnFire(2);
+            
+        }
     }
 
     private int calculateFuelConsumption(float powerPercentage, float fluidPropertiesConsumptionMultiplier, int tick_rate){
@@ -295,6 +340,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             BlockState state = level.getBlockState(checkPos);
             if (!(state.isAir() || !state.isSolid())) break;
         }
+        
         isThrustDirty = true;
     }
 
