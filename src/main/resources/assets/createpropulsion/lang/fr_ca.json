@@ -1,33 +1,33 @@
 {
-    "itemGroup.createpropulsion.base": "Create: Propulsion",
+    "itemGroup.createpropulsion.base": "Create: Propultion",
 
-    "block.createpropulsion.thruster": "Thruster",
-    "item.createpropulsion.thruster": "Thruster",
+    "block.createpropulsion.thruster": "Propulseur",
+    "item.createpropulsion.thruster": "Propulseur",
 
-    "block.createpropulsion.inline_optical_sensor": "Inline Optical Sensor",
-    "item.createpropulsion.inline_optical_sensor": "Inline Optical Sensor",
+    "block.createpropulsion.inline_optical_sensor": "Capteur Optic Inline",
+    "item.createpropulsion.inline_optical_sensor": "Capteur Optic Inline",
 
-    "block.createpropulsion.optical_sensor": "Optical Sensor",
-    "item.createpropulsion.optical_sensor": "Optical Sensor",
-    "create.gui.optical_sensor.distance_behaviour": "Raycast Distance",
+    "block.createpropulsion.optical_sensor": "Capteur Optique",
+    "item.createpropulsion.optical_sensor": "Capteur Optique",
+    "create.gui.optical_sensor.distance_behaviour": "Distance D'Emeteur De Rayon",
 
-    "create.gui.goggles.thruster.status": "Thruster Status",
-    "create.gui.goggles.thruster.status.no_fuel": "No Fuel",
-    "create.gui.goggles.thruster.status.wrong_fuel": "Wrong Fuel",
-    "create.gui.goggles.thruster.status.not_powered": "Not Powered",
-    "create.gui.goggles.thruster.status.working": "On",
-    "create.gui.goggles.thruster.obstructed": "Obstructed",
-    "create.gui.goggles.thruster.efficiency": "Efficiency",
+    "create.gui.goggles.thruster.status": "État De Propulseur",
+    "create.gui.goggles.thruster.status.no_fuel": "Pas De Carburant",
+    "create.gui.goggles.thruster.status.wrong_fuel": "Mauvais Carburant",
+    "create.gui.goggles.thruster.status.not_powered": "Aucun Signal Redstone",
+    "create.gui.goggles.thruster.status.working": "Actif",
+    "create.gui.goggles.thruster.obstructed": "Obstruée",
+    "create.gui.goggles.thruster.efficiency": "Efficaciter",
 
-    "createpropulsion.inline_optical_sensor.tooltip.summary": "Casts a _ray_ up to _{} blocks long_, detecting blocks.",
-    "createpropulsion.inline_optical_sensor.tooltip.condition1": "When block is detected",
-    "createpropulsion.inline_optical_sensor.tooltip.behaviour1": "Emits _redstone signal_. Power is stronger for closer blocks.",
+    "createpropulsion.inline_optical_sensor.tooltip.summary": "Émet un _rayon_ jusqu'à _{} bloc de distance_, detecte les blocs.",
+    "createpropulsion.inline_optical_sensor.tooltip.condition1": "Lorce qu'un block est détectée.",
+    "createpropulsion.inline_optical_sensor.tooltip.behaviour1": "Émetre un _signal de redstone_. Puissanse est plus forte pour les block plus proche.",
 
-    "createpropulsion.optical_sensor.tooltip.summary": "Configurable _raycast sensor_. Set _distance_ and _filter_ by block type.",
-    "createpropulsion.optical_sensor.tooltip.condition1": "When block is detected",
-    "createpropulsion.optical_sensor.tooltip.behaviour1": "If a matching block is detected, emits _redstone signal_. Power is stronger for closer blocks.",
+    "createpropulsion.optical_sensor.tooltip.summary": "_dectecteur à emeteur de rayon_ configurable. Metre la _distance_ et _un filter_ par type de bloc.",
+    "createpropulsion.optical_sensor.tooltip.condition1": "Quand un bloc est détecté",
+    "createpropulsion.optical_sensor.tooltip.behaviour1": "Si un block conrespondant est détecté, emetre _Un signal redstone_. La puissanse augmante plus le bloc et proche.",
 
-    "createpropulsion.thruster.tooltip.summary": "Provides thrust up to _{} kN_ to push vehicles.",
-    "createpropulsion.thruster.tooltip.condition1": "When fueled and powered",
-    "createpropulsion.thruster.tooltip.behaviour1": "Pushes vehicles. Thrust depends on _redstone signal_ strength."
+    "createpropulsion.thruster.tooltip.summary": "fournie une pousser jusqu'a _{} kN_ pour pousser le vehicle.",
+    "createpropulsion.thruster.tooltip.condition1": "Quand activer par la redstone et que du Carburant et fournie",
+    "createpropulsion.thruster.tooltip.behaviour1": "Pousse le vehicle. La force de la pousser depent sur la force du _signal de redstone_."
 }
