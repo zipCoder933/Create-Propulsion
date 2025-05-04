@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -187,32 +188,33 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     @SuppressWarnings("null")
     private void doEntityDamageCheck(int tick) {
         if (tick % TICKS_PER_ENTITY_CHECK != 0) return;
-        //TODO: Distance and damage also should be based on power
-        //Generate AABB
+        //TODO: Distance and damage also should be based on thruster power
+        //Generate start and end AABBs
         Direction toPlume = state.getValue(InlineOpticalSensorBlock.FACING).getOpposite();
         BlockPos blockBehind = worldPosition.relative(toPlume);
         int endOffset = emptyBlocks != OBSTRUCTION_LENGTH ? emptyBlocks : OBSTRUCTION_LENGTH + 3; //If not obstructed - bigger damage box
         BlockPos blockEnd = worldPosition.relative(toPlume, endOffset);
-        //Hacky way to get actual aabb easily
-        //TODO: should cache and reuse aabbs tho
         AABB startAABB = new AABB(blockBehind);
+        AABB endAABB = new AABB(blockEnd);
         //Offset starting block in the direction of plume by 0.3 meters to account for nozzle
         Vec3i normalFacing = toPlume.getNormal();
         Vec3 startOffsetVector = new Vec3(normalFacing.getX(), normalFacing.getY(), normalFacing.getZ()).scale(0.333f);
         startAABB = startAABB.move(startOffsetVector);
-        AABB endAABB = new AABB(blockEnd);
+        //Generate final aabb and query entities
         AABB plumeAABB = startAABB.minmax(endAABB);
-        //Get candidates to be damaged and set on fire
         List<Entity> damageCandidates = level.getEntities(null, plumeAABB);
+        //Damage and set on fire entities
+        DamageSource fireDamageSource = level.damageSources().onFire();
+        Vec3 thrusterCenter = worldPosition.getCenter();
         for (Entity entity : damageCandidates) {
             if (entity.fireImmune()) continue;
             Vec3 position = entity.position();
-            Vec3 blockCenter = worldPosition.getCenter();
             //Use square distance cuz faster + damage falloff, tho I guess it feels a bit bad, needs testing
-            float invSqrDistance = 5.0f / (float)Math.max(1, position.distanceToSqr(blockCenter));
+            float invSqrDistance = 5.0f / (float)Math.max(1, position.distanceToSqr(thrusterCenter));
             float damageAmount = 3 + invSqrDistance;
-            entity.hurt(damageCandidates.get(0).damageSources().onFire(), damageAmount);
+            entity.hurt(fireDamageSource, damageAmount);
             entity.setSecondsOnFire(2);
+            
         }
     }
 
@@ -338,6 +340,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             BlockState state = level.getBlockState(checkPos);
             if (!(state.isAir() || !state.isSolid())) break;
         }
+        
         isThrustDirty = true;
     }
 
