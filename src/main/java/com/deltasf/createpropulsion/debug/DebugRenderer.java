@@ -51,7 +51,7 @@ public class DebugRenderer {
                 Matrix4dc shipToWorldMatrix = ship.getShipToWorld();
                 Quaterniondc shipRotation = ship.getTransform().getShipToWorldRotation();
                 //Transform Position
-                Vector3d posInShip = VectorConversionsMCKt.toJOML(position); // Convert to JOML double Vec
+                Vector3d posInShip = VectorConversionsMCKt.toJOML(position);
                 Vector3d posInWorld = shipToWorldMatrix.transformPosition(posInShip, new Vector3d());
                 //Transform Rotation
                 Quaterniond rotInShip = new Quaterniond(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -87,7 +87,7 @@ public class DebugRenderer {
         }
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
-        if (level == null) return; //In case we do not have a level yet
+        if (level == null) return; //In case we do not have a level yet for some reason
         
         TimedBoxData data = new TimedBoxData(level, center, size, rotation, color, onlyInDebugMode, ticksToRender);
         timedBoxes.put(identifier, data);
@@ -139,7 +139,7 @@ public class DebugRenderer {
         }
     }
 
-    //Decay debug data
+    //Decay boxes
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
@@ -158,6 +158,7 @@ public class DebugRenderer {
         }
     }
 
+    //Render boxes
     @SubscribeEvent
     public static void onRenderLevelStage(RenderLevelStageEvent event) {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || timedBoxes.isEmpty()) {

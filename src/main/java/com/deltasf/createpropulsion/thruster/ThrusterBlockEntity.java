@@ -66,6 +66,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
     public static final int BASE_MAX_THRUST = 400000;
     public static final float BASE_FUEL_CONSUMPTION = 2;
     public static final int TICKS_PER_ENTITY_CHECK = 5;
+    public static final int LOWEST_POWER_THRSHOLD = 5; 
     //Thruster data
     private ThrusterData thrusterData;
     public SmartFluidTankBehaviour tank;
@@ -206,11 +207,10 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         if (power == 0) return;
         if (!validFluid()) return;
         //Limit minumum velocity and particle count when power is lower than that
-        int lowestPowerThreshold = 5; 
         clientTick++;
-        if (power < lowestPowerThreshold && clientTick % 2 == 0) {clientTick = 0; return; }
+        if (power < LOWEST_POWER_THRSHOLD && clientTick % 2 == 0) {clientTick = 0; return; }
 
-        float powerPercentage = Math.max(power, lowestPowerThreshold) / 15.0f;
+        float powerPercentage = Math.max(power, LOWEST_POWER_THRSHOLD) / 15.0f;
         float velocity = 4f * powerPercentage;
         float shipVelocityModifier = 0.15f;
 
@@ -332,20 +332,18 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         isThrustDirty = compound.getBoolean("isThrustDirty");
     }
     
-    //This is ugly af, fix it and implement all todos
+    //This is ugly af, fix it
     @SuppressWarnings("null")
     private void doEntityDamageCheck(int tick) {
         if (tick % TICKS_PER_ENTITY_CHECK != 0) return;
-        //TODO: Distance and damage also should be based on thruster power
+        int power = state.getValue(ThrusterBlock.POWER);
+        float visualPowerPercent = ((float)Math.max(power, LOWEST_POWER_THRSHOLD) - LOWEST_POWER_THRSHOLD) / 15.0f;
+        float distanceByPower = org.joml.Math.lerp(0.55f,1.5f, visualPowerPercent);
 
         Direction plumeDirection = getBlockState().getValue(ThrusterBlock.FACING).getOpposite();
         //Define OBB Dimensions
-        double plumeStartOffset = 1;
-        int maxDamageLength = OBSTRUCTION_LENGTH + 3;
-        double plumeEndOffset = Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + plumeStartOffset;
-        if (emptyBlocks == OBSTRUCTION_LENGTH) {
-            plumeEndOffset = maxDamageLength;
-        }
+        double plumeStartOffset = 0.8;
+        double plumeEndOffset = emptyBlocks * distanceByPower + plumeStartOffset;
         double plumeLength = Math.max(0, plumeEndOffset - plumeStartOffset);
         if (plumeLength <= 0.01) return;
 
@@ -380,7 +378,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
         //Calculate AABB for Broad-Phase Query
         BlockPos blockBehind = worldPosition.relative(plumeDirection);
-        int aabbEndOffset = (emptyBlocks == OBSTRUCTION_LENGTH) ? maxDamageLength : Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + 1;
+        int aabbEndOffset = (int)Math.floor(emptyBlocks * distanceByPower) + 1;
         BlockPos blockEnd = worldPosition.relative(plumeDirection, aabbEndOffset);
         AABB plumeAABB = new AABB(blockBehind).minmax(new AABB(blockEnd)).inflate(1.0); //Inflation is optional but it makes me a bit more confident
 
@@ -413,7 +411,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             if (entity.isRemoved() || entity.fireImmune()) continue;
             AABB entityAABB = entity.getBoundingBox();
             if (plumeOBB.intersect(entityAABB) != null) {
-                float invSqrDistance = 5.0f / (float)Math.max(1, entity.position().distanceToSqr(thrusterNozzleWorldPosMC));
+                float invSqrDistance = visualPowerPercent * 8.0f / (float)Math.max(1, entity.position().distanceToSqr(thrusterNozzleWorldPosMC));
                 float damageAmount = 3 + invSqrDistance;
 
                 // Apply damage and fire
