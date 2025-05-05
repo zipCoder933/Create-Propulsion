@@ -416,7 +416,7 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
                 // Apply damage and fire
                 entity.hurt(fireDamageSource, damageAmount);
-                entity.setSecondsOnFire(2); 
+                entity.setSecondsOnFire(3); 
             }
         }
     }
