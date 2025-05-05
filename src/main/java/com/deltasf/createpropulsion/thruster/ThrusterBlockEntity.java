@@ -55,9 +55,11 @@ import com.simibubi.create.foundation.collision.Matrix3d;
 import com.simibubi.create.foundation.collision.OrientedBB;
 import com.deltasf.createpropulsion.particles.ParticleTypes;
 import com.deltasf.createpropulsion.particles.PlumeParticleData;
+import com.deltasf.createpropulsion.utility.MathUtility;
 import com.jesz.createdieselgenerators.fluids.FluidRegistry;
 import com.drmangotea.tfmg.registry.TFMGFluids;
 
+//Abandon all hope, ye who enter here
 @SuppressWarnings({"deprecation", "unchecked"})
 public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
     private static final int OBSTRUCTION_LENGTH = 10; //Prob should be a config
@@ -189,102 +191,6 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         thrusterData.setThrust(thrust);
     }
 
-    //This is ugly af, fix it and implement all todos
-    @SuppressWarnings("null")
-    private void doEntityDamageCheck(int tick) {
-        if (tick % TICKS_PER_ENTITY_CHECK != 0) return;
-        //TODO: Distance and damage also should be based on thruster power
-
-        Direction thrusterFacing = getBlockState().getValue(ThrusterBlock.FACING);
-        Direction plumeDirection = thrusterFacing.getOpposite();
-
-        //Define OBB Dimensions
-        double plumeStartOffset = 0.5;
-        int maxDamageLength = OBSTRUCTION_LENGTH + 3;
-        double plumeEndOffset = Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + plumeStartOffset;
-        if (emptyBlocks == OBSTRUCTION_LENGTH) {
-            plumeEndOffset = maxDamageLength;
-        }
-        double plumeLength = Math.max(0, plumeEndOffset - plumeStartOffset);
-        if (plumeLength <= 0.01) return;
-
-        // Plume OBB Half-Extents (JOML)
-        Vector3d plumeHalfExtentsJOML = new Vector3d(0.5, 0.5, plumeLength / 2.0);
-
-        // Calculate OBB World Position and Orientation (JOML)
-        Vector3d obbCenterWorldJOML;
-        Quaterniond obbRotationWorldJOML;
-        Vector3d thrusterCenterBlockWorldJOML; // For nozzle position calc
-        double centerOffsetDistance = plumeStartOffset + (plumeLength / 2.0);
-        Vector3d relativeCenterOffsetJOML = VectorConversionsMCKt.toJOMLD(plumeDirection.getNormal()).mul(centerOffsetDistance);
-        Quaterniond relativeRotationJOML = new Quaterniond().rotateTo(new Vector3d(0, 0, 1), VectorConversionsMCKt.toJOMLD(plumeDirection.getNormal()));
-
-        // Use toJOMLD for double precision Vector3d expected by VS transforms
-        Vector3d thrusterCenterBlockShipCoordsJOMLD = VectorConversionsMCKt.toJOML(Vec3.atCenterOf(worldPosition));
-
-        Ship ship = VSGameUtilsKt.getShipManagingPos(level, worldPosition);
-        if (ship != null) {
-            // Transform block center to world
-            thrusterCenterBlockWorldJOML = ship.getShipToWorld().transformPosition(thrusterCenterBlockShipCoordsJOMLD, new Vector3d());
-            // Calculate OBB center (relative center + block center in ship coords, then transform)
-            obbCenterWorldJOML = ship.getShipToWorld().transformPosition(relativeCenterOffsetJOML.add(thrusterCenterBlockShipCoordsJOMLD, new Vector3d()), new Vector3d());
-            // Combine ship rotation and relative rotation
-            obbRotationWorldJOML = ship.getTransform().getShipToWorldRotation().mul(relativeRotationJOML, new Quaterniond());
-        } else {
-            // World space coordinates are simpler
-            thrusterCenterBlockWorldJOML = thrusterCenterBlockShipCoordsJOMLD; // Already in world
-            obbCenterWorldJOML = thrusterCenterBlockWorldJOML.add(relativeCenterOffsetJOML, new Vector3d());
-            obbRotationWorldJOML = relativeRotationJOML;
-        }
-
-
-        Vector3d nozzleOffsetLocal = new Vector3d(0, 0, 0.5); // Offset from block center to face along local Z
-        Vector3d nozzleOffsetWorld = obbRotationWorldJOML.transform(nozzleOffsetLocal, new Vector3d()); // Rotate offset into world orientation
-        Vector3d thrusterNozzleWorldPos = thrusterCenterBlockWorldJOML.add(nozzleOffsetWorld, new Vector3d());
-        Vec3 thrusterNozzleWorldPosMC = VectorConversionsMCKt.toMinecraft(thrusterNozzleWorldPos);
-
-        Vec3 plumeCenterMC = VectorConversionsMCKt.toMinecraft(obbCenterWorldJOML);
-        Vec3 plumeHalfExtentsMC = VectorConversionsMCKt.toMinecraft(plumeHalfExtentsJOML);
-        
-        Matrix3d plumeRotationMatrix = createMatrixFromQuaternion(obbRotationWorldJOML);
-        OrientedBB plumeOBB = new OrientedBB(plumeCenterMC, plumeHalfExtentsMC, plumeRotationMatrix);
-
-        //Calculate AABB for Broad-Phase Query
-        BlockPos blockBehind = worldPosition.relative(plumeDirection);
-        int aabbEndOffset = (emptyBlocks == OBSTRUCTION_LENGTH) ? maxDamageLength : Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + 1;
-        BlockPos blockEnd = worldPosition.relative(plumeDirection, aabbEndOffset);
-        AABB plumeAABB_broadphase = new AABB(blockBehind).minmax(new AABB(blockEnd)).inflate(1.0); //Inflation is optional
-
-        boolean debug = true; // Set to false to disable debug boxes
-        if (debug) {
-            String identifier = "thruster_" + this.hashCode() + "_obb";
-            // Use JOML types for your DebugRenderer
-            Quaternionf debugRotation = new Quaternionf((float)obbRotationWorldJOML.x, (float)obbRotationWorldJOML.y, (float)obbRotationWorldJOML.z, (float)obbRotationWorldJOML.w);
-            Vec3 debugSize = new Vec3(plumeHalfExtentsJOML.x * 2, plumeHalfExtentsJOML.y * 2, plumeHalfExtentsJOML.z * 2);
-            Vec3 debugCenter = VectorConversionsMCKt.toMinecraft(obbCenterWorldJOML);
-
-            DebugRenderer.drawBox(identifier, debugCenter, debugSize, debugRotation, Color.ORANGE, false, TICKS_PER_ENTITY_CHECK + 1);
-        }
-
-        List<Entity> damageCandidates = level.getEntities(null, plumeAABB_broadphase);
-        if (damageCandidates.isEmpty()) return;
-
-        DamageSource fireDamageSource = level.damageSources().onFire();
-        for (Entity entity : damageCandidates) {
-            if (entity.isRemoved() || entity.fireImmune()) continue;
-            AABB entityAABB = entity.getBoundingBox();
-            if (plumeOBB.intersect(entityAABB) != null) {
-                float invSqrDistance = 5.0f / (float)Math.max(1, entity.position().distanceToSqr(thrusterNozzleWorldPosMC));
-                float damageAmount = 3 + invSqrDistance;
-
-                // Apply damage and fire
-                entity.hurt(fireDamageSource, damageAmount);
-                entity.setSecondsOnFire(2); 
-            }
-        }
-    }
-
-
     private int calculateFuelConsumption(float powerPercentage, float fluidPropertiesConsumptionMultiplier, int tick_rate){
         float base_consumption = BASE_FUEL_CONSUMPTION * Config.THRUSTER_CONSUMPTION_MULTIPLIER.get();
         return (int)Math.ceil(base_consumption * powerPercentage * fluidPropertiesConsumptionMultiplier * tick_rate);
@@ -407,7 +313,6 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             BlockState state = level.getBlockState(checkPos);
             if (!(state.isAir() || !state.isSolid())) break;
         }
-        
         isThrustDirty = true;
     }
 
@@ -426,6 +331,97 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
         currentTick = compound.getInt("currentTick");
         isThrustDirty = compound.getBoolean("isThrustDirty");
     }
+    
+    //This is ugly af, fix it and implement all todos
+    @SuppressWarnings("null")
+    private void doEntityDamageCheck(int tick) {
+        if (tick % TICKS_PER_ENTITY_CHECK != 0) return;
+        //TODO: Distance and damage also should be based on thruster power
+
+        Direction plumeDirection = getBlockState().getValue(ThrusterBlock.FACING).getOpposite();
+        //Define OBB Dimensions
+        double plumeStartOffset = 1;
+        int maxDamageLength = OBSTRUCTION_LENGTH + 3;
+        double plumeEndOffset = Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + plumeStartOffset;
+        if (emptyBlocks == OBSTRUCTION_LENGTH) {
+            plumeEndOffset = maxDamageLength;
+        }
+        double plumeLength = Math.max(0, plumeEndOffset - plumeStartOffset);
+        if (plumeLength <= 0.01) return;
+
+        // Calculate OBB World Position and Orientation
+        Vector3d obbCenterWorldJOML;
+        Quaterniond obbRotationWorldJOML;
+        Vector3d thrusterCenterBlockWorldJOML;
+        double centerOffsetDistance = plumeStartOffset + (plumeLength / 2.0);
+        Vector3d relativeCenterOffsetJOML = VectorConversionsMCKt.toJOMLD(plumeDirection.getNormal()).mul(centerOffsetDistance);
+        Quaterniond relativeRotationJOML = new Quaterniond().rotateTo(new Vector3d(0, 0, 1), VectorConversionsMCKt.toJOMLD(plumeDirection.getNormal()));
+
+        Vector3d thrusterCenterBlockShipCoordsJOMLD = VectorConversionsMCKt.toJOML(Vec3.atCenterOf(worldPosition));
+
+        Ship ship = VSGameUtilsKt.getShipManagingPos(level, worldPosition);
+        if (ship != null) {
+            //Ship-space
+            thrusterCenterBlockWorldJOML = ship.getShipToWorld().transformPosition(thrusterCenterBlockShipCoordsJOMLD, new Vector3d());
+            obbCenterWorldJOML = ship.getShipToWorld().transformPosition(relativeCenterOffsetJOML.add(thrusterCenterBlockShipCoordsJOMLD, new Vector3d()), new Vector3d());
+            obbRotationWorldJOML = ship.getTransform().getShipToWorldRotation().mul(relativeRotationJOML, new Quaterniond());
+        } else {
+            // World space
+            thrusterCenterBlockWorldJOML = thrusterCenterBlockShipCoordsJOMLD;
+            obbCenterWorldJOML = thrusterCenterBlockWorldJOML.add(relativeCenterOffsetJOML, new Vector3d());
+            obbRotationWorldJOML = relativeRotationJOML;
+        }
+
+        //Calculate actuall nozzle position for distance-based damage calculation
+        Vector3d nozzleOffsetLocal = new Vector3d(0, 0, 0.5); // Offset from block center to face along local Z
+        Vector3d nozzleOffsetWorld = obbRotationWorldJOML.transform(nozzleOffsetLocal, new Vector3d()); // Rotate offset into world orientation
+        Vector3d thrusterNozzleWorldPos = thrusterCenterBlockWorldJOML.add(nozzleOffsetWorld, new Vector3d());
+        Vec3 thrusterNozzleWorldPosMC = VectorConversionsMCKt.toMinecraft(thrusterNozzleWorldPos);
+
+        //Calculate AABB for Broad-Phase Query
+        BlockPos blockBehind = worldPosition.relative(plumeDirection);
+        int aabbEndOffset = (emptyBlocks == OBSTRUCTION_LENGTH) ? maxDamageLength : Math.min(emptyBlocks, OBSTRUCTION_LENGTH) + 1;
+        BlockPos blockEnd = worldPosition.relative(plumeDirection, aabbEndOffset);
+        AABB plumeAABB = new AABB(blockBehind).minmax(new AABB(blockEnd)).inflate(1.0); //Inflation is optional but it makes me a bit more confident
+
+        //Calculate OBB for Narrow check
+        Vector3d plumeHalfExtentsJOML = new Vector3d(0.7, 0.7, plumeLength / 2.0);
+        Vec3 plumeCenterMC = VectorConversionsMCKt.toMinecraft(obbCenterWorldJOML);
+        Vec3 plumeHalfExtentsMC = VectorConversionsMCKt.toMinecraft(plumeHalfExtentsJOML);
+        
+        Matrix3d plumeRotationMatrix = MathUtility.createMatrixFromQuaternion(obbRotationWorldJOML);
+        OrientedBB plumeOBB = new OrientedBB(plumeCenterMC, plumeHalfExtentsMC, plumeRotationMatrix);
+
+        //Debug OBB
+        boolean debug = false;
+        if (debug) {
+            String identifier = "thruster_" + this.hashCode() + "_obb";
+            Quaternionf debugRotation = new Quaternionf((float)obbRotationWorldJOML.x, (float)obbRotationWorldJOML.y, (float)obbRotationWorldJOML.z, (float)obbRotationWorldJOML.w);
+            Vec3 debugSize = new Vec3(plumeHalfExtentsJOML.x * 2, plumeHalfExtentsJOML.y * 2, plumeHalfExtentsJOML.z * 2);
+            Vec3 debugCenter = VectorConversionsMCKt.toMinecraft(obbCenterWorldJOML);
+
+            DebugRenderer.drawBox(identifier, debugCenter, debugSize, debugRotation, Color.ORANGE, false, TICKS_PER_ENTITY_CHECK + 1);
+        }
+
+        //Query damage candidates
+        List<Entity> damageCandidates = level.getEntities(null, plumeAABB);
+        if (damageCandidates.isEmpty()) return;
+
+        //Apply damage
+        DamageSource fireDamageSource = level.damageSources().onFire();
+        for (Entity entity : damageCandidates) {
+            if (entity.isRemoved() || entity.fireImmune()) continue;
+            AABB entityAABB = entity.getBoundingBox();
+            if (plumeOBB.intersect(entityAABB) != null) {
+                float invSqrDistance = 5.0f / (float)Math.max(1, entity.position().distanceToSqr(thrusterNozzleWorldPosMC));
+                float damageAmount = 3 + invSqrDistance;
+
+                // Apply damage and fire
+                entity.hurt(fireDamageSource, damageAmount);
+                entity.setSecondsOnFire(2); 
+            }
+        }
+    }
 
     //Just reversed version of create TooltipHelper.makeProgressBar
     public static String makeObstructionBar(int length, int filledLength) {
@@ -439,46 +435,5 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
            bar = bar + "█";
         }
         return bar + " ";
-    }
-
-
-    public static Matrix3d createMatrixFromQuaternion(Quaterniond quaternion) {
-        double qx = quaternion.x;
-        double qy = quaternion.y;
-        double qz = quaternion.z;
-        double qw = quaternion.w;
-        double lengthSq = qx * qx + qy * qy + qz * qz + qw * qw;
-        double invLength = 1.0 / Math.sqrt(lengthSq);
-
-        double x = qx * invLength;
-        double y = qy * invLength;
-        double z = qz * invLength;
-        double w = qw * invLength;
-        double roll, pitch, yaw;
-
-        // Singularity check
-        double sinp = 2.0 * (w * y - z * x);
-
-        if (Math.abs(sinp) > 0.999999) { // Gimbal lock prevention
-            pitch = Math.PI / 2.0 * Math.signum(sinp);
-            roll = Math.atan2(2.0 * (x * y + w * z), 1.0 - 2.0 * (y * y + z * z));
-            yaw = 0.0;
-
-        } else {
-            roll = Math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y));
-            pitch = Math.asin(sinp);
-            yaw = Math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z));
-        }
-
-        Matrix3d resultMatrix = new Matrix3d();
-        Matrix3d tempY = new Matrix3d();
-        Matrix3d tempX = new Matrix3d();
-        resultMatrix.asZRotation((float) yaw);
-        tempY.asYRotation((float) pitch);
-        resultMatrix.multiply(tempY);
-        tempX.asXRotation((float) roll);
-        resultMatrix.multiply(tempX);
-
-        return resultMatrix;
     }
 }

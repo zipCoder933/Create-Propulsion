@@ -87,6 +87,7 @@ public class DebugRenderer {
         }
         Minecraft mc = Minecraft.getInstance();
         Level level = mc.level;
+        if (level == null) return; //In case we do not have a level yet
         
         TimedBoxData data = new TimedBoxData(level, center, size, rotation, color, onlyInDebugMode, ticksToRender);
         timedBoxes.put(identifier, data);
