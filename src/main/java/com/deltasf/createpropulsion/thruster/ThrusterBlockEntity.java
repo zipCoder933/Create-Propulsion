@@ -187,13 +187,14 @@ public class ThrusterBlockEntity extends SmartBlockEntity implements IHaveGoggle
             //Consume fluid
             tank.getPrimaryHandler().drain(consumption, IFluidHandler.FluidAction.EXECUTE);
             //Calculate thrust
-            thrust = BASE_MAX_THRUST * Config.THRUSTER_THRUST_MULTIPLIER.get() * thrustPercentage * properties.thrustMultiplier;
+            float thrustMultiplier = (float)(double)Config.THRUSTER_THRUST_MULTIPLIER.get();
+            thrust = BASE_MAX_THRUST * thrustMultiplier * thrustPercentage * properties.thrustMultiplier;
         }
         thrusterData.setThrust(thrust);
     }
 
     private int calculateFuelConsumption(float powerPercentage, float fluidPropertiesConsumptionMultiplier, int tick_rate){
-        float base_consumption = BASE_FUEL_CONSUMPTION * Config.THRUSTER_CONSUMPTION_MULTIPLIER.get();
+        float base_consumption = BASE_FUEL_CONSUMPTION * (float)(double)Config.THRUSTER_CONSUMPTION_MULTIPLIER.get();
         return (int)Math.ceil(base_consumption * powerPercentage * fluidPropertiesConsumptionMultiplier * tick_rate);
     }
 
