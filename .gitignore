@@ -29,3 +29,5 @@ forge*changelog.txt
 TODO
 bcl.bat
 changelog.md
+#Intellij creates these annoying files that are clones of saved files but end in ~
+*.*~
