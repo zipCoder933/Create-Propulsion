@@ -1,5 +1,6 @@
 package com.deltasf.createpropulsion;
 
+import com.deltasf.createpropulsion.createKinetic.CreateKineticMod;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlock;
 import com.deltasf.createpropulsion.optical_sensors.InlineOpticalSensorBlockEntity;
 import com.deltasf.createpropulsion.optical_sensors.OpticalSensorBlock;
@@ -147,6 +148,11 @@ public class CreatePropulsion {
                 output.accept(INLINE_OPTICAL_SENSOR_BLOCK);
                 output.accept(OPTICAL_SENSOR_BLOCK);
                 output.accept(THRUSTER_BLOCK);
+                /**
+                 * Custom items
+                 */
+                output.accept(CreateKineticMod.SHIP_TOTEM.get());
+                output.accept(CreateKineticMod.FREEZE_SHIP_TOTEM.get());
             }
         }
     }

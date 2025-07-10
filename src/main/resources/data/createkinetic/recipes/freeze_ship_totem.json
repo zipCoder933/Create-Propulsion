@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "createkinetic:ship_totem" },
+    { "item": "minecraft:ice" }
+  ],
+  "result": {
+    "item": "createkinetic:freeze_ship_totem",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " b ",
+    "beb",
+    "ggg"
+  ],
+  "key": {
+    "b": {
+      "item": "create:brass_sheet"
+    },
+    "g": {
+      "item": "minecraft:gold_ingot"
+    },
+    "e": {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result": {
+    "item": "createkinetic:ship_totem",
+    "count": 1
+  }
+}
